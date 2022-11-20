@@ -1,22 +1,62 @@
 import * as React from 'react';
 import { Button, View, Text, StyleSheet, Pressable, TextInput } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 
 
-function HomeScreen({ Home }) {
-    const navigation = useNavigation();
+
+
+
+
+
+
+function HomeScreen ({ navigation })  {
+
+  
+
+
+
+
+    //const navigation = useNavigation();
+    const route = useRoute();
+    var token = route.params.token
+    var password = route.params.password
+
+  
+    const userLogout = () => {
+      
+     
+      fetch('http://localhost:3000/wecare/logout-user?token='+token, {
+          method: 'POST',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json'
+          },
+        });  
+       
+    }
     return (
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', width: '80%', marginLeft: '10%' }}>
         <Text style={styles.welcomeLabel}>Welcome Label</Text>
         <View style={styles.searchBox}>
           <Text style={styles.findPatientText}>Find One Patient</Text>
+        
           <TextInput style={styles.searchInput} placeholder="Write your patients name" />
           <Pressable style = {styles.findButton} title="See All Patients" ><Text style={styles.searchButtonText} >Find</Text></Pressable>
         </View>
-        <Pressable style = {styles.defaultButton} title="See All Patients" onPress={() => navigation.push('All Patients')} ><Text style={styles.textButton} >See All Patients</Text></Pressable>
+        <Pressable style = {styles.defaultButton} title="See All Patients" onPress={() => navigation.navigate('All Patients' , {
+        token: token,
+        password: password
+      })} ><Text style={styles.textButton} >See All Patients</Text></Pressable>
         <Pressable style = {styles.defaultButton} title="See all critical patients" onPress={() => navigation.navigate('Critical Patients')} ><Text style={styles.textButton} >See All Critical Patients</Text></Pressable>
-        <Pressable style = {styles.defaultButton} title="Add new patient" onPress={() => navigation.navigate('Add Patient')} ><Text style={styles.textButton} >Add New Patient</Text></Pressable>
-        <Pressable style = {styles.defaultButton} title="Sign out" onPress={() => navigation.navigate('Sign in')} ><Text style={styles.textButton} >Sign Out</Text></Pressable>
+        <Pressable style = {styles.defaultButton} title="Add new patient" onPress={() => navigation.navigate('Add Patient', {
+        token: token,
+        password: password
+      })} ><Text style={styles.textButton} >Add New Patient</Text></Pressable>
+        <Pressable style = {styles.defaultButton} title="Sign out" onPress={userLogout}  onPressOut={() => navigation.navigate('Sign in', {
+          
+        }
+        
+        )} ><Text style={styles.textButton} >Sign Out</Text></Pressable>
       </View>
     );
 }

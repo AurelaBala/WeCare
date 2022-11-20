@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { LogBox } from "react-native";
 import {
   View,
@@ -9,119 +9,216 @@ import {
   TouchableOpacity,
   Modal,
   Pressable,
-} from "react-native";
-import { useNavigation } from "@react-navigation/native";
+  FlatList
 
-const PatientDetailsScreen = () => {
+} from "react-native";
+
+
+import { useNavigation, useRoute } from "@react-navigation/native";
+ 
+
+function PatientDetailsScreen()  {
+  
+
   const [isVisible, setModalVisible] = React.useState(false);
   const navigation = useNavigation();
+
+  const route = useRoute();
+  var token = route.params.token
+  var password = route.params.password
+  var patient_id = route.params.patient_id
+
+  const [isLoading, setLoading] = useState(true);
+  const [data, setData] = useState([]);
+  const [records, setRecords] = useState([]);
+  var patientName = data.PatientName
+  var age= data.Age
+  var dateOfBirthday = data.DOB
+  var patientStatus = data.Status
+  var address = data.Address
+  var city = data.City
+  var postalCode = data.PostalCode
+  var allergies = data.Allergies
+  var emergencyContactName = data.EmergencyContactName
+  var emergencyContactNumber = data.EmergencyContactNumber
+  var medicalCondition = data.MedicalCondition
+
+  
+  useEffect(() => {
+    //var token="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkF1cmVsYSIsImlhdCI6MTY2ODYxNDE4MX0.JldNNuROQ_fhskcNI-aIKmOoiUxOkmQOGYtz9OgLBEY"
+   // var password = '123'
+   // var id = "d9wkcr"
+    fetch('http://127.0.0.1:3000/wecare/get-patient?token='+token+'&password='+password+'&patient_id='+patient_id)
+      .then((response) => response.json())
+      .then((json) => setData(json))
+      .catch((error) => console.error(error))
+      .finally(() => setLoading(false));
+  }, []);
+
+  useEffect(() => {
+    //var token="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkF1cmVsYSIsImlhdCI6MTY2ODYxNDE4MX0.JldNNuROQ_fhskcNI-aIKmOoiUxOkmQOGYtz9OgLBEY"
+    fetch('http://localhost:3000/wecare/get-records?token='+token+'&password='+password+'&patient_id='+patient_id)
+      .then((response) => response.json())
+      .then((json) => setRecords(json))
+      .catch((error) => console.error(error))
+      .finally(() => setLoading(false));
+  }, []);
+  
+  const deletePatient = () => {
+    fetch('http://127.0.0.1:3000/wecare/delete-patient?token='+token+'&password='+password+'&patient_id='+patient_id, {
+        method: 'DELETE',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json'
+        },
+      });  
+     deleteAllRecords()
+      navigation.navigate("Home" ,{
+                    
+        token: token,
+        password: password,
+       
+      })
+  }
+
+  const deleteAllRecords = () => {
+    fetch('http://localhost:3000/wecare/delete-records?token='+token+'&password='+password+'&patient_id='+patient_id, {
+        method: 'DELETE',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json'
+        },
+      });  
+     
+  }
+
   const settingVisibility = () => {
     setModalVisible(true);
   };
   useEffect(() => {
     LogBox.ignoreLogs(["Animated: `useNativeDriver`"]);
   }, []);
+  
   return (
     <View style={styles.container}>
+    
+     
       <Modal
         animationType="slide"
         transparent={true}
         visible={isVisible}
         onRequestClose={() => {
-          console.log("Modal has been closed.");
-          setModalVisible(!isVisible);
-        }}
-      >
+        console.log("Modal has been closed.");
+        setModalVisible(!isVisible);
+          }}>
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
             <Text style={styles.textModal}>Alert</Text>
             <Text style={styles.subTextAlert}>
-              Are you sure you want to Delete this Patient?
+                Are you sure you want to Delete this Patient?
             </Text>
             <View style={styles.directionRow}>
-              <Pressable
-                style={{
-                  borderTopWidth: 1,
-                  borderRightWidth: 0.5,
-                  borderColor: "#000",
-                  color: "#000",
-                  padding: 10,
-                }}
-                onPress={() => {
-                  setModalVisible(!isVisible);
-                }}
-              >
-                <Text style={styles.subTextModal}>Keep Patient</Text>
-              </Pressable>
-              <Pressable
-                style={{
-                  borderTopWidth: 1,
-                  borderLeftWidth: 0.5,
-                  borderColor: "#000",
-                  color: "#000",
-                  padding: 10,
-                }}
-                onPress={() => navigation.navigate("All Patients")}
-              >
-                <Text style={styles.subTextModal}>Delete Patient</Text>
-              </Pressable>
-            </View>
+                <Pressable
+                  style={{
+                    borderTopWidth: 1,
+                    borderRightWidth: 0.5,
+                    borderColor: "#000",
+                    color: "#000",
+                    padding: 10,
+                  }}
+                  onPress={() => {
+                    setModalVisible(!isVisible);
+                  }}>
+                  <Text style={styles.subTextModal}>Keep Patient</Text>
+                </Pressable>
+                <Pressable
+                  style={{
+                    borderTopWidth: 1,
+                    borderLeftWidth: 0.5,
+                    borderColor: "#000",
+                    color: "#000",
+                    padding: 10,
+                  }}
+                 
+                  onPress = {deletePatient}
+
+                 
+                >
+                  <Text style={styles.subTextModal}>Delete Patient</Text>
+                </Pressable>
+              </View>
           </View>
         </View>
       </Modal>
       <View style={styles.twoColumn}>
         <Image
           style={styles.tinyLogo}
-          source={require("../../images/avatar.png")}
-        />
-        <Text style={styles.titleText}>John Doe</Text>
+          source={require("../../images/avatar.png")} />
+        <Text style={styles.titleText}>{patientName} </Text> 
       </View>
       <View style={styles.twoColumn}>
         <Text style={styles.commonText}>
-          <Text style={styles.commonTextChild}>Age:</Text> 69
+          <Text style={styles.commonTextChild}>Age:</Text> {age}
         </Text>
         <Text style={styles.commonText}>
-          <Text style={styles.commonTextChild}>Status:</Text> Non Critical
+          <Text style={styles.commonTextChild}>Birthday:</Text> {dateOfBirthday} 1997
+        </Text>
+        <Text style={styles.commonText}>
+          <Text style={styles.commonTextChild}>Status:</Text> {patientStatus} 
         </Text>
       </View>
       <Text style={styles.commonText}>
-        <Text style={styles.commonTextChild}>Current Address:</Text> 941
-        Progress Ave Scarborough, ON, M1G 3T8
+        <Text style={styles.commonTextChild}>Date of birthday:</Text> {dateOfBirthday}
       </Text>
       <Text style={styles.commonText}>
-        <Text style={styles.commonTextChild}>Allergies:</Text> Shellfish &
-        Penicillin
+        <Text style={styles.commonTextChild}>Current Address:</Text> {address}, {city}, {postalCode}
       </Text>
       <Text style={styles.commonText}>
-        <Text style={styles.commonTextChild}>Emergency Contact:</Text> Jane Doe
-        (746)-737-8571
+        <Text style={styles.commonTextChild}>Allergies:</Text> {allergies}
       </Text>
       <Text style={styles.commonText}>
-        <Text style={styles.commonTextChild}>Medical Conditions:</Text> Diabetes
+        <Text style={styles.commonTextChild}>Emergency Contact:</Text> {emergencyContactName},
+        {emergencyContactNumber}
+      </Text>
+      <Text style={styles.commonText}>
+        <Text style={styles.commonTextChild}>Medical Conditions:</Text> {medicalCondition}
       </Text>
       <View>
         <Text style={styles.heading}>Latest Records</Text>
         <View style={styles.twoColumn}>
-          <View style={{ height: 120 }}>
+
+
+          <View style={{ height: 120, width: 300 }}>
             <ScrollView style={styles.latestRecordContainer}>
-              <Text style={styles.recordText}>
-                10/10/2022 : Blood Pressure - 120/80 mmHg
-              </Text>
-              <Text style={styles.recordText}>
-                10/10/2022 : Heartbeat Rate - 75 / min
-              </Text>
-              <Text style={styles.recordText}>
-                09/10/2022 : Respiratory Rate - 20 / min
-              </Text>
-              <Text style={styles.recordText}>
-                09/10/2022 : Blood Oxygen - 97 %
-              </Text>
+            {(records.length == 0) ? <Text style={styles.scrollPatientRecord}><Text style = {styles.patientText}>No records found</Text></Text> :
+      isLoading ? <Text>Loading...</Text> : 
+        (
+        <FlatList
+            data={records}
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={({ item }) => (
+            
+              <Text style={styles.recordText}>{item.date}: {item.type} - {item.value}</Text>
+              
+            )}
+          />
+         
+        )
+      }
+      
+              
             </ScrollView>
           </View>
+
+
           <View style={styles.directionColumn}>
             <TouchableOpacity
-              onPress={() => navigation.navigate("Patient's All Records")}
-            >
+              onPress={() => navigation.navigate("Patient's All Records", {
+                patient_id: patient_id,
+                token: token,
+                password: password,
+                patient_name: patientName
+              })}>
               <Image
                 style={styles.sideLogo}
                 source={require("../../images/list-icon.png")}
@@ -129,7 +226,12 @@ const PatientDetailsScreen = () => {
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.submitButton}
-              onPress={() => navigation.navigate("Add Patient's Record")}
+              onPress={() => navigation.navigate("Add Patient's Record",{
+                patient_id: patient_id,
+                token: token,
+                password: password,
+                patient_name: patientName
+              })}
             >
               <Image
                 style={styles.sideLogo}
@@ -172,14 +274,14 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   titleText: {
-    fontSize: 50,
+    fontSize: 20,
     fontWeight: "bold",
-    padding: 5,
+    padding: 25,
     justifyContent: "center",
     color: "midnightblue",
   },
   commonText: {
-    fontSize: 16,
+    fontSize: 13,
     paddingTop: 28,
     fontWeight: "500",
   },
@@ -211,7 +313,7 @@ const styles = StyleSheet.create({
   },
   commonTextChild: {
     fontWeight: "700",
-    fontSize: 16,
+    fontSize: 14,
   },
   heading: {
     fontSize: 24,

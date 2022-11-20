@@ -1,22 +1,84 @@
-import React from "react";
+import React, { useEffect, useState } from 'react';
 import {
   View,
   ScrollView,
   Text,
   StyleSheet,
   Pressable,
-  Modal,
+  Modal, FlatList
 } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 
-const PatientRecordsListingScreen = () => {
+function PatientRecordsListingScreen () {
   const [isVisible, setModalVisible] = React.useState(false);
   const navigation = useNavigation();
+
+  const [isLoading, setLoading] = useState(true);
+  const [data, setData] = useState([]);
+
+  const route = useRoute();
+  var token = route.params.token
+  var password = route.params.password
+  var patient_id = route.params.patient_id
+  var patient_name = route.params.patient_name
+
+  //console.log(to)
+  useEffect(() => {
+    //var token="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkF1cmVsYSIsImlhdCI6MTY2ODYxNDE4MX0.JldNNuROQ_fhskcNI-aIKmOoiUxOkmQOGYtz9OgLBEY"
+    fetch('http://localhost:3000/wecare/get-records?token='+token+'&password='+password+'&patient_id='+patient_id)
+      .then((response) => response.json())
+      .then((json) => setData(json))
+      .catch((error) => console.error(error))
+      .finally(() => setLoading(false));
+  }, []);
+
   const settingVisibility = () => {
     setModalVisible(true);
   };
+
+  const deleteAllRecords = () => {
+    fetch('http://localhost:3000/wecare/delete-records?token='+token+'&password='+password+'&patient_id='+patient_id, {
+        method: 'DELETE',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json'
+        },
+      });  
+      //checkTextInput
+  }
   return (
+    
     <View style={styles.container}>
+      <Text style={styles.heading}>{patient_name}'s Records</Text>
+      <View style={styles.customScrollView}>
+      {(data.length == 0) ? <Text style={styles.scrollPatientRecord}><Text style = {styles.patientText}>No records found for {patient_name}</Text></Text> :
+      isLoading ? <Text>Loading...</Text> : 
+        (
+        <FlatList style={styles.scrollViewStyle}
+            data={data}
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={({ item }) => (
+              <Pressable style={styles.scrollPatientRecord} title="Patient" onPress={() => navigation.navigate("Update Patient's Record", {
+                patient_id: patient_id,
+                token: token,
+                password: password,
+                record_id: item.id,
+                value: item.value,
+                type: item.type,
+                date: item.date,
+                patient_name: patient_name
+              })}>
+              <Text style={styles.patientText}>{item.type}</Text>
+              </Pressable>
+            )}
+          />
+         
+        )
+      }
+      
+       
+        
+      </View>
       <Modal
         animationType="slide"
         transparent={true}
@@ -55,7 +117,12 @@ const PatientRecordsListingScreen = () => {
                   color: "#000",
                   padding: 7,
                 }}
-                onPress={() => navigation.navigate("Patient's Information")}
+                onPress = {deleteAllRecords}
+                onPressOut={() => navigation.navigate("Patient's Information",{
+                  patient_id: patient_id,
+                  token: token,
+                  password: password
+                })}
               >
                 <Text style={styles.subTextModal}>Delete All Records</Text>
               </Pressable>
@@ -63,187 +130,21 @@ const PatientRecordsListingScreen = () => {
           </View>
         </View>
       </Modal>
-      <Text style={styles.heading}>John's Records</Text>
-      <View style={styles.scrollViewContainer}>
-        <ScrollView
-          showsVerticalScrollIndicator="true"
-          style={styles.scrollViewStyle}
-        >
-          <Pressable
-            style={styles.scrollPatientRecord}
-            onPress={() => navigation.navigate(`Update Patient's Record`)}
-          >
-            <Text style={styles.patientText}>
-              10/10/2022 : Blood Pressure - 120/80 mmHg
-            </Text>
-          </Pressable>
-          <Pressable
-            style={styles.scrollPatientRecord}
-            onPress={() => navigation.navigate(`Update Patient's Record`)}
-          >
-            <Text style={styles.patientText}>
-              10/10/2022 : Heartbeat Rate - 75 / min
-            </Text>
-          </Pressable>
-          <Pressable
-            style={styles.scrollPatientRecord}
-            onPress={() => navigation.navigate(`Update Patient's Record`)}
-          >
-            <Text style={styles.patientText}>
-              09/10/2022 : Respiratory Rate - 20 / min
-            </Text>
-          </Pressable>
-          <Pressable
-            style={styles.scrollPatientRecord}
-            onPress={() => navigation.navigate(`Update Patient's Record`)}
-          >
-            <Text style={styles.patientText}>
-              09/10/2022 : Blood Oxygen - 97 %
-            </Text>
-          </Pressable>
-          <Pressable
-            style={styles.scrollPatientRecord}
-            onPress={() => navigation.navigate(`Update Patient's Record`)}
-          >
-            <Text style={styles.patientText}>
-              08/10/2022 : Blood Pressure - 120/80 mmHg
-            </Text>
-          </Pressable>
-          <Pressable
-            style={styles.scrollPatientRecord}
-            onPress={() => navigation.navigate(`Update Patient's Record`)}
-          >
-            <Text style={styles.patientText}>
-              08/10/2022 : Heartbeat Rate - 75 / min
-            </Text>
-          </Pressable>
-          <Pressable
-            style={styles.scrollPatientRecord}
-            onPress={() => navigation.navigate(`Update Patient's Record`)}
-          >
-            <Text style={styles.patientText}>
-              08/10/2022 : Respiratory Rate - 20 / min
-            </Text>
-          </Pressable>
-          <Pressable
-            style={styles.scrollPatientRecord}
-            onPress={() => navigation.navigate(`Update Patient's Record`)}
-          >
-            <Text style={styles.patientText}>
-              08/10/2022 : Blood Oxygen - 97 %
-            </Text>
-          </Pressable>
-          <Pressable
-            style={styles.scrollPatientRecord}
-            onPress={() => navigation.navigate(`Update Patient's Record`)}
-          >
-            <Text style={styles.patientText}>
-              05/10/2022 : Blood Pressure - 120/80 mmHg
-            </Text>
-          </Pressable>
-          <Pressable
-            style={styles.scrollPatientRecord}
-            onPress={() => navigation.navigate(`Update Patient's Record`)}
-          >
-            <Text style={styles.patientText}>
-              05/10/2022 : Heartbeat Rate - 75 / min
-            </Text>
-          </Pressable>
-          <Pressable
-            style={styles.scrollPatientRecord}
-            onPress={() => navigation.navigate(`Update Patient's Record`)}
-          >
-            <Text style={styles.patientText}>
-              05/10/2022 : Respiratory Rate - 20 / min
-            </Text>
-          </Pressable>
-          <Pressable
-            style={styles.scrollPatientRecord}
-            onPress={() => navigation.navigate(`Update Patient's Record`)}
-          >
-            <Text style={styles.patientText}>
-              05/10/2022 : Blood Oxygen - 97 %
-            </Text>
-          </Pressable>
-          <Pressable
-            style={styles.scrollPatientRecord}
-            onPress={() => navigation.navigate(`Update Patient's Record`)}
-          >
-            <Text style={styles.patientText}>
-              02/10/2022 : Blood Pressure - 120/80 mmHg
-            </Text>
-          </Pressable>
-          <Pressable
-            style={styles.scrollPatientRecord}
-            onPress={() => navigation.navigate(`Update Patient's Record`)}
-          >
-            <Text style={styles.patientText}>
-              02/10/2022 : Heartbeat Rate - 75 / min
-            </Text>
-          </Pressable>
-          <Pressable
-            style={styles.scrollPatientRecord}
-            onPress={() => navigation.navigate(`Update Patient's Record`)}
-          >
-            <Text style={styles.patientText}>
-              02/10/2022 : Respiratory Rate - 20 / min
-            </Text>
-          </Pressable>
-          <Pressable
-            style={styles.scrollPatientRecord}
-            onPress={() => navigation.navigate(`Update Patient's Record`)}
-          >
-            <Text style={styles.patientText}>
-              02/10/2022 : Blood Oxygen - 97 %
-            </Text>
-          </Pressable>
-          <Pressable
-            style={styles.scrollPatientRecord}
-            onPress={() => navigation.navigate(`Update Patient's Record`)}
-          >
-            <Text style={styles.patientText}>
-              29/09/2022 : Blood Pressure - 120/80 mmHg
-            </Text>
-          </Pressable>
-          <Pressable
-            style={styles.scrollPatientRecord}
-            onPress={() => navigation.navigate(`Update Patient's Record`)}
-          >
-            <Text style={styles.patientText}>
-              29/09/2022 : Heartbeat Rate - 75 / min
-            </Text>
-          </Pressable>
-          <Pressable
-            style={styles.scrollPatientRecord}
-            onPress={() => navigation.navigate(`Update Patient's Record`)}
-          >
-            <Text style={styles.patientText}>
-              29/09/2022 : Respiratory Rate - 20 / min
-            </Text>
-          </Pressable>
-          <Pressable
-            style={styles.scrollPatientRecord}
-            onPress={() => navigation.navigate(`Update Patient's Record`)}
-          >
-            <Text style={styles.patientText}>
-              29/09/2022 : Blood Oxygen - 97 %
-            </Text>
-          </Pressable>
-        </ScrollView>
-      </View>
+
       <View style={styles.bottomDeleteButton}>
         <Pressable style={styles.deletePressable} onPress={settingVisibility}>
           <Text style={styles.deleteText}>Delete</Text>
         </Pressable>
       </View>
+      
+
+
+     
     </View>
   );
 };
 const styles = StyleSheet.create({
-  container: {
-    padding: 20,
-    paddingTop: 30,
-  },
+  
   centeredView: {
     flex: 1,
     justifyContent: "center",
@@ -269,10 +170,11 @@ const styles = StyleSheet.create({
     color: "white",
   },
   heading: {
-    fontSize: 40,
+    fontSize: 20,
     fontWeight: "600",
     textAlign: "center",
-    marginBottom: 30,
+    marginBottom: 10,
+    marginTop: 10
   },
   scrollPatientRecord: {
     borderBottomColor: "#dda0dd",
@@ -284,6 +186,17 @@ const styles = StyleSheet.create({
   scrollViewContainer: {
     height: 500,
   },
+
+  customScrollView: {
+    width: '80%',
+    
+    marginLeft: '10%',
+    marginTop: 5,
+    marginBottom: 5,
+    borderWidth: 1,
+    maxHeight: '80%'
+  },
+
   scrollViewStyle: {
     padding: 5,
     borderWidth: 1,

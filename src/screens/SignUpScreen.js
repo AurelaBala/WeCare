@@ -7,12 +7,6 @@ function SignInScreen({ Details }){
     const navigation = useNavigation();
     return(
         <View>
-        {/* <Text>Home Screen</Text>
-        <Button
-            title="Go to Details"
-            onPress={() => navigation.navigate('Details')}
-        /> */}
-
             <View>
                
                 <View style={{ alignItems: 'center', justifyContent: 'center', marginTop: 20 }}>
@@ -29,7 +23,7 @@ function SignInScreen({ Details }){
               placeholder = "Enter Your Email"
               onChangeText={(text) => this.userEmail = text}
               />
-              {/* <Text style={styles.label}>Password:</Text> */}
+             
               <TextInput style = {styles.input}
               underlineColorAndroid = "transparent"
               placeholder = "Enter Your Password"
@@ -37,9 +31,7 @@ function SignInScreen({ Details }){
               onChangeText={(text) => this.userPassword = text}/>
               <TouchableOpacity style = {styles.submitButton}
               onPress={createUser}
-              onPressOut={() => navigation.navigate('Sign in')}
-            // onPressIn={() => Linking.openURL('http://localhost:3009/wecare/add-user?username='+userName+'&email='+userEmail+'&password='+userPassword)}
-            >
+              onPressOut={() => navigation.navigate('Sign in')}>
             
               
             <Text style = {styles.submitButtonText}>Create account</Text>
@@ -47,7 +39,8 @@ function SignInScreen({ Details }){
             </View>
             <View>
             <TouchableOpacity  style = {styles.submitButton}
-            onPress={() => navigation.navigate('Sign in')}>
+            onPress={() => navigation.navigate('Sign in')
+            }>
             <Text style = {styles.submitButtonText}>Sign In Instead</Text>
             </TouchableOpacity>
             </View>
@@ -57,7 +50,7 @@ function SignInScreen({ Details }){
 }
 
 const createUser = () => {
-    fetch('http://localhost:3009/wecare/add-user?username='+userName+'&email='+userEmail+'&password='+userPassword, {
+    fetch('http://localhost:3000/wecare/add-user?username='+userName+'&email='+userEmail+'&password='+userPassword, {
         method: 'POST',
         headers: {
           Accept: 'application/json',
@@ -70,6 +63,11 @@ const createUser = () => {
         // })
       });
 }
+
+
+
+
+
 
 
 export default SignInScreen;

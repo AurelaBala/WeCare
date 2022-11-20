@@ -1,112 +1,56 @@
-import * as React from 'react';
-import { Button, View, Text, Pressable, StyleSheet, ScrollView } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import React, { useEffect, useState } from 'react';
+import { FlatList, Text, View, StyleSheet, ScrollView, Pressable } from 'react-native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 
-function ViewAllPatientsScreen({ Home }) {
-    const navigation = useNavigation();
+
+
+
+function ViewAllPatientsScreen ()  {
+
+ 
+  const navigation = useNavigation();
+  const [isLoading, setLoading] = useState(true);
+  const [data, setData] = useState([]);
+  const route = useRoute();
+  var token = route.params.token
+  var password = route.params.password
+  
+//console.log(to)
+  useEffect(() => {
+    //var token="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkF1cmVsYSIsImlhdCI6MTY2ODYxNDE4MX0.JldNNuROQ_fhskcNI-aIKmOoiUxOkmQOGYtz9OgLBEY"
+    fetch('http://localhost:3000/wecare/get-all-patients?token='+token+'&password='+password)
+      .then((response) => response.json())
+      .then((json) => setData(json))
+      .catch((error) => console.error(error))
+      .finally(() => setLoading(false));
+  }, []);
+
+
     return (
-      // <View><Text>All Patients</Text></View>
+   <View>
       <View style={styles.customScrollView}>
-        {/* <Pressable style = {styles.defaultButton} title="Go back" onPress={() => navigation.goBack()} ><Text style={styles.textButton} >Go Back</Text></Pressable> */}
-        <ScrollView style={styles.scrollViewStyle}>
-          <Pressable style={styles.scrollPatient} title="Patient 1" onPress={() => navigation.navigate("Patient's Information")}>
-            <Text style={styles.patientText}>Patient 1</Text>
-          </Pressable>
-          <Pressable style={styles.scrollPatient} title="Patient 1" onPress={() => navigation.navigate("Patient's Information")}>
-            <Text style={styles.patientText}>Patient 2</Text>
-          </Pressable>
-          <Pressable style={styles.scrollPatient} title="Patient 1" onPress={() => navigation.navigate("Patient's Information")}>
-            <Text style={styles.patientText}>Patient 3</Text>
-          </Pressable>
-          <Pressable style={styles.scrollPatient} title="Patient 1" onPress={() => navigation.navigate("Patient's Information")}>
-            <Text style={styles.patientText}>Patient 4</Text>
-          </Pressable>
-          <Pressable style={styles.scrollPatient} title="Patient 1" onPress={() => navigation.navigate("Patient's Information")}>
-            <Text style={styles.patientText}>Patient 5</Text>
-          </Pressable>
-          <Pressable style={styles.scrollPatient} title="Patient 1" onPress={() => navigation.navigate("Patient's Information")}>
-            <Text style={styles.patientText}>Patient 6</Text>
-          </Pressable>
-          <Pressable style={styles.scrollPatient} title="Patient 1" onPress={() => navigation.navigate("Patient's Information")}>
-            <Text style={styles.patientText}>Patient 7</Text>
-          </Pressable>
-          <Pressable style={styles.scrollPatient} title="Patient 1" onPress={() => navigation.navigate("Patient's Information")}>
-            <Text style={styles.patientText}>Patient 8</Text>
-          </Pressable>
-          <Pressable style={styles.scrollPatient} title="Patient 1" onPress={() => navigation.navigate("Patient's Information")}>
-            <Text style={styles.patientText}>Patient 9</Text>
-          </Pressable>
-          <Pressable style={styles.scrollPatient} title="Patient 1" onPress={() => navigation.navigate("Patient's Information")}>
-            <Text style={styles.patientText}>Patient 10</Text>
-          </Pressable>
-          <Pressable style={styles.scrollPatient} title="Patient 1" onPress={() => navigation.navigate("Patient's Information")}>
-            <Text style={styles.patientText}>Patient 11</Text>
-          </Pressable>
-          <Pressable style={styles.scrollPatient} title="Patient 1" onPress={() => navigation.navigate("Patient's Information")}>
-            <Text style={styles.patientText}>Patient 12</Text>
-          </Pressable>
-          <Pressable style={styles.scrollPatient} title="Patient 1" onPress={() => navigation.navigate("Patient's Information")}>
-            <Text style={styles.patientText}>Patient 13</Text>
-          </Pressable>
-          <Pressable style={styles.scrollPatient} title="Patient 1" onPress={() => navigation.navigate("Patient's Information")}>
-            <Text style={styles.patientText}>Patient 14</Text>
-          </Pressable>
-          <Pressable style={styles.scrollPatient} title="Patient 1" onPress={() => navigation.navigate("Patient's Information")}>
-            <Text style={styles.patientText}>Patient 15</Text>
-          </Pressable>
-          <Pressable style={styles.scrollPatient} title="Patient 1" onPress={() => navigation.navigate("Patient's Information")}>
-            <Text style={styles.patientText}>Patient 16</Text>
-          </Pressable>
-          <Pressable style={styles.scrollPatient} title="Patient 1" onPress={() => navigation.navigate("Patient's Information")}>
-            <Text style={styles.patientText}>Patient 17</Text>
-          </Pressable>
-          <Pressable style={styles.scrollPatient} title="Patient 1" onPress={() => navigation.navigate("Patient's Information")}>
-            <Text style={styles.patientText}>Patient 18</Text>
-          </Pressable>
-          <Pressable style={styles.scrollPatient} title="Patient 1" onPress={() => navigation.navigate("Patient's Information")}>
-            <Text style={styles.patientText}>Patient 19</Text>
-          </Pressable>
-          <Pressable style={styles.scrollPatient} title="Patient 1" onPress={() => navigation.navigate("Patient's Information")}>
-            <Text style={styles.patientText}>Patient 20</Text>
-          </Pressable>
-          <Pressable style={styles.scrollPatient} title="Patient 1" onPress={() => navigation.navigate("Patient's Information")}>
-            <Text style={styles.patientText}>Patient 21</Text>
-          </Pressable>
-          <Pressable style={styles.scrollPatient} title="Patient 1" onPress={() => navigation.navigate("Patient's Information")}>
-            <Text style={styles.patientText}>Patient 22</Text>
-          </Pressable>
-          <Pressable style={styles.scrollPatient} title="Patient 1" onPress={() => navigation.navigate("Patient's Information")}>
-            <Text style={styles.patientText}>Patient 23</Text>
-          </Pressable>
-          <Pressable style={styles.scrollPatient} title="Patient 1" onPress={() => navigation.navigate("Patient's Information")}>
-            <Text style={styles.patientText}>Patient 24</Text>
-          </Pressable>
-          <Pressable style={styles.scrollPatient} title="Patient 1" onPress={() => navigation.navigate("Patient's Information")}>
-            <Text style={styles.patientText}>Patient 25</Text>
-          </Pressable>
-          <Pressable style={styles.scrollPatient} title="Patient 1" onPress={() => navigation.navigate("Patient's Information")}>
-            <Text style={styles.patientText}>Patient 26</Text>
-          </Pressable>
-          <Pressable style={styles.scrollPatient} title="Patient 1" onPress={() => navigation.navigate("Patient's Information")}>
-            <Text style={styles.patientText}>Patient 27</Text>
-          </Pressable>
-          <Pressable style={styles.scrollPatient} title="Patient 1" onPress={() => navigation.navigate("Patient's Information")}>
-            <Text style={styles.patientText}>Patient 28</Text>
-          </Pressable>
-          <Pressable style={styles.scrollPatient} title="Patient 1" onPress={() => navigation.navigate("Patient's Information")}>
-            <Text style={styles.patientText}>Patient 29</Text>
-          </Pressable>
-          <Pressable style={styles.scrollPatient} title="Patient 1" onPress={() => navigation.navigate("Patient's Information")}>
-            <Text style={styles.patientText}>Patient 30</Text>
-          </Pressable>
-          <Pressable style={styles.scrollPatient} title="Patient 1" onPress={() => navigation.navigate("Patient's Information")}>
-            <Text style={styles.patientText}>Patient 31</Text>
-          </Pressable>
-          <Pressable style={styles.scrollPatient} title="Patient 1" onPress={() => navigation.navigate("Patient's Information")}>
-            <Text style={styles.patientText}>Patient 32</Text>
-          </Pressable>
-        </ScrollView>
+      
+      {(data.length == 0) ? <Text style={styles.scrollPatient}><Text style = {styles.patientText}>No patients found.</Text></Text> :
+      isLoading ? <Text>Loading...</Text> : 
+        (
+        <FlatList style={styles.scrollViewStyle}
+            data={data}
+            //renderItem={renderItem}
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={({ item }) => (
+              <Pressable style={styles.scrollPatient} title="Patient" onPress={() => navigation.navigate("Patient's Information", {
+                patient_id: item.id,
+                token: token,
+                password: password
+              })}>
+              <Text style={styles.patientText}>{item.PatientName}</Text>
+              </Pressable>
+            )}
+          />
+         
+        )}
       </View>
+     </View> 
     );
 }
 

@@ -7,29 +7,118 @@ import {
   Pressable,
 } from "react-native";
 import DatePicker from "react-native-datepicker";
-import React from "react";
+import React, {useEffect, useState} from "react";
 import { LogBox } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import SelectList from "react-native-dropdown-select-list";
 
+//var recordDataType = ""
+//var recordValue = ""
 const EditPatientRecordScreen = () => {
   const navigation = useNavigation();
+  const route = useRoute();
+  
+  var token = route.params.token
+  var password = route.params.password
+  var patient_id = route.params.patient_id
+  var record_id = route.params.record_id
+  var patient_name = route.params.patient_name
+  var record_value = route.params.value
+  var record_type = route.params.type
+  var record_date = route.params.date
+  const [isLoading, setLoading] = useState(true);
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+   
+    fetch('http://127.0.0.1:3000/wecare/get-record?token='+token+'&password='+password+'&record_id='+record_id)
+      .then((response) => response.json())
+      .then((json) => setData(json))
+      .catch((error) => console.error(error))
+      .finally(() => setLoading(false));
+   // recordValue = data.value
+
+  }, []);
+  var recordDate = data.date
+  var recordType= data.type
+ 
+  console.log(data.value)
+  //var test = recordValue
   const [val, onChangeValueText] = React.useState("");
-  const [selectedDate, setDate] = React.useState(new Date());
-  const [selectedValue, setSelectedValue] = React.useState("Blood Pressure");
+  const [selectedDate, setDate] = React.useState(record_date);
+  const [textDataType, setDataType] = useState('');
+  const [selectedValue, setSelectedValue] = React.useState(record_type);
+  const [textRecordValue, setRecordValue] = useState(record_value);
   const [isVisible, setModalVisible] = React.useState(false);
   const settingVisibility = () => {
     setModalVisible(true);
   };
+
   var dataTypeList = [
-    { key: "1", value: "Blood Pressure" },
-    { key: "2", value: "Blood Oxygen" },
-    { key: "3", value: "Hearbeat Rate" },
-    { key: "4", value: "Respiratory Rate" },
+    { key: "Blood Pressure", value: "Blood Pressure" },
+    { key: "Blood Oxygen", value: "Blood Oxygen" },
+    { key: "Hearbeat Rate", value: "Hearbeat Rate" },
+    { key: "Respiratory Rate", value: "Respiratory Rate" },
   ];
+
+  
+
+
+  const updateRecord = () => {
+    fetch('http://127.0.0.1:3000/wecare/edit-record?token='+token+'&password='+password+'&patient_id='+patient_id+'&record_id='+record_id+'&date='+newdate+'&type='+recordDataType+'&value='+recordValueNew, {
+        method: 'PATCH',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json'
+        },
+      });  
+     
+      navigation.navigate("Home" ,{
+                    
+        token: token,
+        password: password,
+       
+      })
+  }
+
+  const checkTextInput = () => {
+    //Check for the Patient's TextInputs
+    // if (!textRecordDate.trim()) {
+    //   alert('Please Select a Date');
+    //   return;
+    // }
+    // if (!textDataType.trim()) {
+    //   alert('Please Select Data Type');
+    //   return;
+    // }
+    if (!textRecordValue.trim()) {
+      alert('Please Enter a Value');
+      return;
+    }
+    newdate = selectedDate
+    
+    //if all text inputs are not empty, get their values
+    
+    //recordDataType = textDataType
+    recordValueNew = textRecordValue
+    recordDataType = selectedValue
+    //call create patient method
+    updateRecord()
+    //navigate to list of all patients after creating the user
+    navigation.navigate("Patient's All Records" , {
+      token: token,
+      password: password,
+      patient_id: patient_id,
+      patient_name: patient_name
+      
+    })
+    alert('Record was edited Successfuly');
+  };
+
   LogBox.ignoreAllLogs();
   return (
     <View style={styles.container}>
+     
       <Modal
         animationType="slide"
         transparent={true}
@@ -117,6 +206,7 @@ const EditPatientRecordScreen = () => {
           data={dataTypeList}
           boxstyles={{ borderRadius: 0, backgroundColor: "white" }}
           dropDownStyles={{ position: "absolute", backgroundColor: "white" }}
+          onChangeText={(value) => setDataType(value)}
         />
       </View>
       <View style={styles.valueTwoColumnView}>
@@ -125,10 +215,10 @@ const EditPatientRecordScreen = () => {
           <View style={styles.twoColumnView}>
             <TextInput
               style={styles.textInput}
-              onChangeText={onChangeValueText}
-              value={val}
-              placeholder="120/80"
+              value= {textRecordValue}
               placeholderTextColor="black"
+              // placeholder={recordValue}
+              onChangeText={(value) => setRecordValue(value)}
             />
             <Text style={styles.commonTextChild}>mmHg</Text>
           </View>
@@ -137,13 +227,18 @@ const EditPatientRecordScreen = () => {
       <View style={styles.addDiscardDeleteButtons}>
         <Pressable
           style={styles.addPressable}
-          onPress={() => navigation.navigate("Patient's All Records")}
+          onPress={checkTextInput}
         >
-          <Text style={styles.addText}>Add</Text>
+          <Text style={styles.addText}>Edit</Text>
         </Pressable>
         <Pressable
           style={styles.discardPressable}
-          onPress={() => navigation.navigate("Patient's All Records")}
+          onPress={() => navigation.navigate("Patient's All Records",  {
+            patient_id: patient_id,
+            token: token,
+            password: password,
+            patient_name: patient_name
+          })}
         >
           <Text style={styles.discardText}>Discard</Text>
         </Pressable>

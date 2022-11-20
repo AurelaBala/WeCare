@@ -1,22 +1,92 @@
 import { TextInput, View, Text, StyleSheet, Pressable } from "react-native";
 import DatePicker from "react-native-datepicker";
-import React from "react";
-import { LogBox } from "react-native";
-import { useNavigation } from "@react-navigation/native";
-import SelectList from "react-native-dropdown-select-list";
 
+import { LogBox } from "react-native";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import SelectList from "react-native-dropdown-select-list";
+import React, { useEffect, useState } from "react";
+
+var recordDataType = ""
+var recordValue = ""
 const CreatePatientRecordScreen = () => {
+
+
+  
   const navigation = useNavigation();
   const [val, onChangeValueText] = React.useState("");
-  const [selectedDate, setDate] = React.useState(new Date());
-  const [selectedValue, setSelectedValue] = React.useState("Blood Pressure");
+  const [selectedDate, setDate] = React.useState('');
+  const [selectedValue, setSelectedValue] = React.useState('');
 
+  const route = useRoute();
+  var token = route.params.token
+  var password = route.params.password
+  var patient_id = route.params.patient_id
+  var patient_name = route.params.patient_name
+
+  const [textRecordDate, setRecordDate] = useState('');
+  const [textDataType, setDataType] = useState('');
+  const [textRecordValue, setRecordValue] = useState('');
+  var recordDate = selectedDate
   var dataTypeList = [
-    { key: "1", value: "Blood Pressure" },
-    { key: "2", value: "Blood Oxygen" },
-    { key: "3", value: "Hearbeat Rate" },
-    { key: "4", value: "Respiratory Rate" },
+    { key: "Blood Pressure", value: "Blood Pressure" },
+    { key: "Blood Oxygen", value: "Blood Oxygen" },
+    { key: "Hearbeat Rate", value: "Hearbeat Rate" },
+    { key: "Respiratory Rate", value: "Respiratory Rate" },
   ];
+
+  
+
+  const createRecord = () => {
+
+    fetch('http://localhost:3000/wecare/add-record?token='+token+'&password='+password+'&patient_id='+patient_id+'&date='+recordDate+'&type='+recordDataType+'&value='+recordValue, {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json'
+        },
+      });  
+      //checkTextInput
+  }
+
+  const checkTextInput = () => {
+    
+    
+    
+    if (!selectedDate.trim()) {
+      alert('Please select a date');
+      return;
+    }
+
+    if (!selectedValue.trim()) {
+      alert('Please select a data type');
+      return;
+    }
+
+    if (!textRecordValue.trim()) {
+      alert('Please Enter a Value');
+      return;
+    }
+    
+    //if all text inputs are not empty, get their values
+    
+    //recordDataType = textDataType
+    recordValue = textRecordValue
+    recordDataType = selectedValue
+    recordDate = selectedDate
+    //call create patient method
+    createRecord()
+    //navigate to list of all patients after creating the user
+    navigation.navigate("Patient's All Records" , {
+      token: token,
+      password: password,
+      patient_id: patient_id,
+      patient_name: patient_name
+      
+    })
+    alert('Record was added Successfuly');
+  };
+
+
   LogBox.ignoreAllLogs();
   return (
     <View style={styles.container}>
@@ -25,7 +95,9 @@ const CreatePatientRecordScreen = () => {
         <Text style={styles.commonTextChild}>Date: </Text>
         <View style={styles.datePickerView}>
           <DatePicker
+          format="YYYY-MM-D"
             customStyles={{
+             
               dateInput: {
                 marginLeft: 0,
                 marginTop: 6,
@@ -54,6 +126,7 @@ const CreatePatientRecordScreen = () => {
           />
         </View>
       </View>
+
       <View style={styles.twoColumnView}>
         <Text style={styles.commonTextChild}>Data Type: </Text>
         <SelectList
@@ -61,33 +134,39 @@ const CreatePatientRecordScreen = () => {
           data={dataTypeList}
           boxstyles={{ borderRadius: 0, backgroundColor: "white" }}
           dropDownStyles={{ position: "absolute", backgroundColor: "white" }}
+          onChangeText={(value) => setDataType(value)}
         />
       </View>
+
+
       <View style={styles.valueTwoColumnView}>
         <Text style={styles.commonTextChild}>Value: </Text>
         <View>
           <View style={styles.twoColumnView}>
             <TextInput
               style={styles.textInput}
-              onChangeText={onChangeValueText}
-              value={val}
+              onChangeText={(value) => setRecordValue(value)}
               placeholder="120/80"
               placeholderTextColor="#B3B3B3"
             />
-            <Text style={styles.commonTextChild}>mmHg</Text>
+          
           </View>
         </View>
       </View>
       <View style={styles.addDiscardButtons}>
         <Pressable
           style={styles.addPressable}
-          onPress={() => navigation.navigate("Patient's Information")}
+          onPress={checkTextInput}
         >
           <Text style={styles.addText}>Add</Text>
         </Pressable>
         <Pressable
           style={styles.discardPressable}
-          onPress={() => navigation.navigate("Patient's Information")}
+          onPress={() => navigation.navigate("Patient's Information",  {
+          patient_id: patient_id,
+          token: token,
+          password: password
+        })}
         >
           <Text style={styles.discardText}>Discard</Text>
         </Pressable>
