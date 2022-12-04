@@ -12,7 +12,7 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 function HomeScreen ({ navigation })  {
 
   
-
+  
 
 
 
@@ -47,7 +47,12 @@ function HomeScreen ({ navigation })  {
         token: token,
         password: password
       })} ><Text style={styles.textButton} >See All Patients</Text></Pressable>
-        <Pressable style = {styles.defaultButton} title="See all critical patients" onPress={() => navigation.navigate('Critical Patients')} ><Text style={styles.textButton} >See All Critical Patients</Text></Pressable>
+        <Pressable style = {styles.defaultButton} title="See all critical patients" onPress={() => navigation.navigate('Critical Patients', {
+           token: token,
+           password: password
+        }
+        
+        )} ><Text style={styles.textButton} >See All Critical Patients</Text></Pressable>
         <Pressable style = {styles.defaultButton} title="Add new patient" onPress={() => navigation.navigate('Add Patient', {
         token: token,
         password: password

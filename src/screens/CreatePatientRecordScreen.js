@@ -10,35 +10,57 @@ var recordDataType = ""
 var recordValue = ""
 const CreatePatientRecordScreen = () => {
 
-
+var text = ""
   
   const navigation = useNavigation();
-  const [val, onChangeValueText] = React.useState("");
   const [selectedDate, setDate] = React.useState('');
   const [selectedValue, setSelectedValue] = React.useState('');
-
   const route = useRoute();
   var token = route.params.token
   var password = route.params.password
   var patient_id = route.params.patient_id
   var patient_name = route.params.patient_name
-
-  const [textRecordDate, setRecordDate] = useState('');
+  var record_link = route.params.record_link
   const [textDataType, setDataType] = useState('');
   const [textRecordValue, setRecordValue] = useState('');
+
+  //const [textTextValue, setTextValue] = useState('');
+
+  
   var recordDate = selectedDate
   var dataTypeList = [
     { key: "Blood Pressure", value: "Blood Pressure" },
     { key: "Blood Oxygen", value: "Blood Oxygen" },
-    { key: "Hearbeat Rate", value: "Hearbeat Rate" },
+    { key: "Heartbeat Rate", value: "Heartbeat Rate" },
     { key: "Respiratory Rate", value: "Respiratory Rate" },
   ];
 
-  
+  const setText = () => {
+    if(selectedValue == "Blood Pressure") {
+      text = "mmHg"
+    }
+    else if(selectedValue == "Blood Oxygen") {
+      text = "%"
+    }
+    else if(selectedValue == "Heartbeat Rate") {
+      text = "beats per minute"
+    }
+    else if(selectedValue == "Respiratory Rate") {
+      text = " breaths per minute"
+    }
+
+    else {
+        text =  ""
+    }
+    
+  }
+
+ // React.useEffect(()=>{setTextValue()}, []);
+
 
   const createRecord = () => {
 
-    fetch('http://localhost:3000/wecare/add-record?token='+token+'&password='+password+'&patient_id='+patient_id+'&date='+recordDate+'&type='+recordDataType+'&value='+recordValue, {
+    fetch('https://we-care-centennial.herokuapp.com/wecare/record?token='+token+'&password='+password+'&record_link='+record_link+'&date='+recordDate+'&type='+recordDataType+'&value='+recordValue, {
         method: 'POST',
         headers: {
           Accept: 'application/json',
@@ -48,9 +70,29 @@ const CreatePatientRecordScreen = () => {
       //checkTextInput
   }
 
+
+ 
+
   const checkTextInput = () => {
     
-    
+    // if(selectedValue == "Blood Pressure") {
+    //   setTextValue("mmHg")
+    // }
+
+    // else if(selectedValue == "Blood Oxygen") {
+    //   setTextValue("%")
+    // }
+   
+    // else if(selectedValue == "Heartbeat Rate") {
+    //   setTextValue("beats per minute")
+    // }
+    // else if(selectedValue == "Respiratory Rate") {
+    //   setTextValue(" breaths per minute")
+    // }
+
+    // else {
+    //     setTextValue("")
+    // }
     
     if (!selectedDate.trim()) {
       alert('Please select a date');
@@ -80,12 +122,13 @@ const CreatePatientRecordScreen = () => {
       token: token,
       password: password,
       patient_id: patient_id,
-      patient_name: patient_name
-      
+      patient_name: patient_name,
+      record_link: record_link
     })
     alert('Record was added Successfuly');
   };
 
+  
 
   LogBox.ignoreAllLogs();
   return (
@@ -95,7 +138,7 @@ const CreatePatientRecordScreen = () => {
         <Text style={styles.commonTextChild}>Date: </Text>
         <View style={styles.datePickerView}>
           <DatePicker
-          format="YYYY-MM-D"
+          format="YYYY-MM-DD"
             customStyles={{
              
               dateInput: {
@@ -135,6 +178,7 @@ const CreatePatientRecordScreen = () => {
           boxstyles={{ borderRadius: 0, backgroundColor: "white" }}
           dropDownStyles={{ position: "absolute", backgroundColor: "white" }}
           onChangeText={(value) => setDataType(value)}
+          onChangeValueText = {setText()}
         />
       </View>
 
@@ -149,7 +193,7 @@ const CreatePatientRecordScreen = () => {
               placeholder="120/80"
               placeholderTextColor="#B3B3B3"
             />
-          
+          <Text style= {styles.commonTextValue}> {text} </Text>
           </View>
         </View>
       </View>
@@ -165,7 +209,8 @@ const CreatePatientRecordScreen = () => {
           onPress={() => navigation.navigate("Patient's Information",  {
           patient_id: patient_id,
           token: token,
-          password: password
+          password: password,
+          record_link: record_link
         })}
         >
           <Text style={styles.discardText}>Discard</Text>
@@ -257,5 +302,8 @@ const styles = StyleSheet.create({
   discardText: {
     color: "white",
   },
+  commonTextValue: {
+    paddingTop: '4%',
+  }
 });
 export default CreatePatientRecordScreen;

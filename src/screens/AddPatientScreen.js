@@ -2,6 +2,8 @@ import * as React from 'react';
 import { View, Text, StyleSheet, Image, TextInput, Pressable, TouchableOpacity } from 'react-native';
 import { Link, useNavigation, useRoute} from '@react-navigation/native';
 import  {useState} from 'react';
+import DatePicker from "react-native-datepicker";
+import SelectList from "react-native-dropdown-select-list";
 
 //declare all variables that will be used on endpoint call
 var patientName = ""
@@ -35,10 +37,20 @@ function AddPatientScreen() {
   const [textPatientEmergencyContactName, setPatientEmergencyContantName] = useState('');
   const [textPatientEmergencyContactNumber, setPatientEmergencyContantNumber] = useState('');
   const [textPatientMedicalCondition, setPatientMedicalCondition] = useState('');
+  const [textDataType, setDataType] = useState('');
+  const [selectedDate, setDate] = useState('');
+
+  const [selectedValue, setSelectedValue] = React.useState('');
+
+  var dataTypeList = [
+    { key: "Critical", value: "Critical" },
+    { key: "Stable", value: "Stable" },
+    
+  ];
 
   const createPatient = () => {
 
-    fetch('http://localhost:3000/wecare/add-patient?token='+token+'&password='+password+'&PatientName='+patientName+'&Age='+age+'&DOB='+dateOfBirthday+'&Status='+patientStatus+'&Address='+address+'&City='+city+'&PostalCode='+postalCode+'&Allergies='+allergies+'&EmergencyContactName='+emergencyContactName+'&EmergencyContactNumber='+emergencyContactNumber+'&MedicalCondition='+medicalCondition, {
+    fetch('https://we-care-centennial.herokuapp.com/wecare/patient?token='+token+'&password='+password+'&PatientName='+patientName+'&Age='+age+'&DOB='+selectedDate+'&Status='+selectedValue+'&Address='+address+'&City='+city+'&PostalCode='+postalCode+'&Allergies='+allergies+'&EmergencyContactName='+emergencyContactName+'&EmergencyContactNumber='+emergencyContactNumber+'&MedicalCondition='+medicalCondition, {
         method: 'POST',
         headers: {
           Accept: 'application/json',
@@ -57,14 +69,19 @@ function AddPatientScreen() {
       alert('Please Enter Patient Age');
       return;
     }
-    if (!textPatientDateOfBirthday.trim()) {
+    if (!selectedDate.trim()) {
       alert('Please Enter Patient Date of Birthday');
       return;
     }
-    if (!textPatientStatus.trim()) {
-      alert('Please Enter Patient Status');
+
+    if (!selectedValue.trim()) {
+      alert("Please Select patient's Status");
       return;
     }
+    // if (!textPatientStatus.trim()) {
+    //   alert('Please Enter Patient Status');
+    //   return;
+    // }
     if (!textPatientAddress.trim()) {
       alert('Please Enter Patient Address');
       return;
@@ -93,6 +110,8 @@ function AddPatientScreen() {
       alert('Please Enter Patient Medical Condition');
       return;
     }
+
+    
     //if all text inputs are not empty, get their values
     patientName = textPatientName
     age = textPatientAge
@@ -120,7 +139,7 @@ function AddPatientScreen() {
     return (
       <View style={styles.addPatientView}>
        
-        <Image style={styles.avatarImage} source={require('../../images/avatar.png')} />
+        {/* <Image style={styles.avatarImage} source={require('../../images/avatar.png')} /> */}
         <TextInput
           style={styles.formStyles}
           placeholder = "Full Name"
@@ -132,16 +151,71 @@ function AddPatientScreen() {
           placeholder = "Age"
           onChangeText={(value) => setPatientAge(value)}
         />
-        <TextInput
+        {/* <TextInput
           style={styles.formStyles}
           placeholder = "Date of birthday"
           onChangeText={(value) => setPatientDateOfBirthday(value)}
-        />
-        <TextInput
+        /> */}
+        <View style={styles.formStyles}>
+          <DatePicker 
+          format="YYYY-MM-DD"
+            customStyles={{
+             
+              dateInput: {
+                
+                marginLeft: 0,
+                borderBottomColor: "#dda0dd",
+                borderTopColor: "white",
+                borderLeftColor: "white",
+                borderRightColor: "white",
+                borderBottomWidth: 2,
+                backgroundColor: "white",
+                width: "200%",
+                borderBottomColor: '#dda0dd',
+                borderBottomWidth: 2,
+                padding: 10,
+                marginBottom: 5,
+                backgroundColor: 'white',
+               
+                marginBottom: 10,
+              },
+              dateIcon: {
+                position: "absolute",
+                left: 0,
+                marginLeft: 250,
+              },
+            }}
+            modal
+            useNativeDriver={true}
+            date={selectedDate}
+            onDateChange={(selectedDate) => {
+              setDate(selectedDate);
+            }}
+            confirmBtnText="Confirm"
+            cancelBtnText="Cancel"
+          />
+        </View>
+        
+        {/* <TextInput
           style={styles.formStyles}
           placeholder = "Status"
           onChangeText={(value) => setPatientStatus(value)}
+        /> */}
+
+<View style={styles.formStyles}>
+        <Text style={styles.commonTextChild}>Status: </Text>
+        <SelectList
+         style={styles.formStyles}
+          setSelected={setSelectedValue}
+          data={dataTypeList}
+          useNativeDriver={true}
+          boxstyles={{ borderRadius: 0, backgroundColor: "white" }}
+          dropDownStyles={{ position: "absolute", backgroundColor: "white", width: "100%" }}
+          onChangeText={(value) => setDataType(value)}
+         
         />
+      </View>
+
         <TextInput
           style={styles.formStyles}
           placeholder = "Street"
@@ -200,10 +274,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     width: '80%',
     marginLeft: '10%',
+    marginTop: '5%',
   },
   avatarImage: {
-    width:120,
-    height: 120,
+    width:50,
+    height: 50,
   },
   formStyles: {
     borderBottomColor: '#dda0dd',
@@ -243,4 +318,26 @@ const styles = StyleSheet.create({
   deleteText: {
     color: 'white',
   },
+
+  valueTwoColumnView: {
+    paddingTop: 20,
+    flexDirection: "row",
+    flexWrap: "nowrap",
+    justifyContent: "flex-start",
+  },
+
+  twoColumnView: {
+    flexDirection: "row",
+    flexWrap: "nowrap",
+    justifyContent: "flex-start",
+  },
+
+  commonTextChild: {
+    fontWeight: "500",
+    fontSize: 15,
+    padding: 10,
+  },
+  statusList: {
+    width: "100%",
+  }
 })

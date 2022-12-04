@@ -1,10 +1,62 @@
 import * as React from 'react';
 import { Button, View, Text, StyleSheet, TextInput, Image, TouchableOpacity, Linking} from 'react-native';
 import { Link, useNavigation, navigate} from '@react-navigation/native';
+import  {useState} from 'react';
 
-
-function SignInScreen({ Details }){
+function SignInScreen({}) {
     const navigation = useNavigation();
+   
+
+    const [textUserName, setUserName] = useState('');
+    const [textUserEmail, setUserEmail] = useState('');
+    const [textUserPassword, setUserPassword] = useState('');
+    
+   
+   
+
+  
+    
+
+    const checkTextInput = () => {
+      //Check for the Patient's TextInputs
+      if (!textUserName.trim()) {
+        alert('Please Enter Your Name');
+        return;
+      }
+      if (!textUserEmail.trim()) {
+        alert('Please Enter Your email');
+        return;
+      }
+      if (textUserPassword.length < 8){
+        alert('Your password must be at least 8 characters');
+        return;
+      }
+  
+      //if all text inputs are not empty, get their values
+      userName = textUserName
+      this.userEmail = textUserEmail
+      this.userPassword = value
+
+      //call create user method
+      createUser()
+      //navigate to list of all patients after creating the user
+      navigation.navigate('Sign in')
+      alert('User was added Successfuly');
+    };
+
+
+    const createUser = () => {
+      fetch('https://we-care-centennial.herokuapp.com/wecare/user?username='+textUserName+'&email='+textUserEmail+'&password='+textUserPassword, {
+          method: 'POST',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json'
+          },
+        });
+  }
+
+
+  const [value, setValue] = useState(1);
     return(
         <View>
             <View>
@@ -16,22 +68,25 @@ function SignInScreen({ Details }){
             <TextInput style = {styles.input}
               underlineColorAndroid = "transparent"
               placeholder = "Enter Your Username"
-              onChangeText={(text) => this.userName = text}
+              onChangeText={(value) => setUserName(value)}
             />
             <TextInput style = {styles.input}
               underlineColorAndroid = "transparent"
               placeholder = "Enter Your Email"
-              onChangeText={(text) => this.userEmail = text}
+              onChangeText={(value) => setUserEmail(value)}
               />
              
               <TextInput style = {styles.input}
               underlineColorAndroid = "transparent"
               placeholder = "Enter Your Password"
               secureTextEntry={true}
-              onChangeText={(text) => this.userPassword = text}/>
+              //onChange={handleChange}
+              onChangeText={(value) => setUserPassword(value)}
+              />
+              
               <TouchableOpacity style = {styles.submitButton}
-              onPress={createUser}
-              onPressOut={() => navigation.navigate('Sign in')}>
+              onPress={checkTextInput}
+              >
             
               
             <Text style = {styles.submitButtonText}>Create account</Text>
@@ -48,24 +103,6 @@ function SignInScreen({ Details }){
 
     );
 }
-
-const createUser = () => {
-    fetch('http://localhost:3000/wecare/add-user?username='+userName+'&email='+userEmail+'&password='+userPassword, {
-        method: 'POST',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json'
-        },
-        // body: JSON.stringify({
-        //   email: userEmail,
-        //   password: userPassword,
-        //   username: userName
-        // })
-      });
-}
-
-
-
 
 
 

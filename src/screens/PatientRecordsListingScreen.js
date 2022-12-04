@@ -15,29 +15,46 @@ function PatientRecordsListingScreen () {
 
   const [isLoading, setLoading] = useState(true);
   const [data, setData] = useState([]);
+  const [records, setRecords] = useState([]);
 
   const route = useRoute();
   var token = route.params.token
   var password = route.params.password
   var patient_id = route.params.patient_id
   var patient_name = route.params.patient_name
+  var record_link = route.params.record_link
 
   //console.log(to)
   useEffect(() => {
     //var token="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkF1cmVsYSIsImlhdCI6MTY2ODYxNDE4MX0.JldNNuROQ_fhskcNI-aIKmOoiUxOkmQOGYtz9OgLBEY"
-    fetch('http://localhost:3000/wecare/get-records?token='+token+'&password='+password+'&patient_id='+patient_id)
+    fetch('https://we-care-centennial.herokuapp.com/wecare/records?token='+token+'&password='+password+'&record_link='+record_link)
       .then((response) => response.json())
       .then((json) => setData(json))
       .catch((error) => console.error(error))
       .finally(() => setLoading(false));
   }, []);
 
+
+
+//refresh
+React.useEffect(() => {
+  const focusHandler = navigation.addListener('focus', () => {
+    fetch('https://we-care-centennial.herokuapp.com/wecare/records?token='+token+'&password='+password+'&record_link='+record_link)
+    .then((response) => response.json())
+    .then((json) => setRecords(json))
+    .catch((error) => console.error(error))
+    .finally(() => setLoading(false));
+  });
+  return focusHandler;
+}, [navigation]);
+
+
   const settingVisibility = () => {
     setModalVisible(true);
   };
 
   const deleteAllRecords = () => {
-    fetch('http://localhost:3000/wecare/delete-records?token='+token+'&password='+password+'&patient_id='+patient_id, {
+    fetch('https://we-care-centennial.herokuapp.com/wecare/records?token='+token+'&password='+password+'&record_link='+record_link, {
         method: 'DELETE',
         headers: {
           Accept: 'application/json',
@@ -51,11 +68,11 @@ function PatientRecordsListingScreen () {
     <View style={styles.container}>
       <Text style={styles.heading}>{patient_name}'s Records</Text>
       <View style={styles.customScrollView}>
-      {(data.length == 0) ? <Text style={styles.scrollPatientRecord}><Text style = {styles.patientText}>No records found for {patient_name}</Text></Text> :
+      {(records.length == 0) ? <Text style={styles.scrollPatientRecord}><Text style = {styles.patientText}>No records found for {patient_name}</Text></Text> :
       isLoading ? <Text>Loading...</Text> : 
         (
         <FlatList style={styles.scrollViewStyle}
-            data={data}
+            data={records}
             keyExtractor={(item) => item.id.toString()}
             renderItem={({ item }) => (
               <Pressable style={styles.scrollPatientRecord} title="Patient" onPress={() => navigation.navigate("Update Patient's Record", {
@@ -66,7 +83,8 @@ function PatientRecordsListingScreen () {
                 value: item.value,
                 type: item.type,
                 date: item.date,
-                patient_name: patient_name
+                patient_name: patient_name,
+                record_link: item.record_link
               })}>
               <Text style={styles.patientText}>{item.type}</Text>
               </Pressable>
@@ -121,7 +139,8 @@ function PatientRecordsListingScreen () {
                 onPressOut={() => navigation.navigate("Patient's Information",{
                   patient_id: patient_id,
                   token: token,
-                  password: password
+                  password: password,
+                  record_link: record_link
                 })}
               >
                 <Text style={styles.subTextModal}>Delete All Records</Text>

@@ -10,45 +10,95 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 var user = ""
 //var pass = ""
 
+
 function HomeScreen ({})  {
   const navigation = useNavigation();
  
   const [isLoading, setLoading] = useState(true);
-  const [data, setData] = useState({});
+  const [data, setData] = React.useState({});
   
   const [textUserUsername, setUserUsername] = useState('');
   const [textUserPassword, setUserPassword] = useState('');
 
   
-  const getToken = () => {
-    fetch('http://127.0.0.1:3000/wecare/login-user?username='+textUserUsername+'&password='+textUserPassword)
-      .then((response) => response.json())
-      .then((json) => setData(json))
-      .catch((error) => console.error(error))
-      .finally(() => setLoading(false));
+  // const getToken = async() => {
+   
+  //   fetch('http://127.0.0.1:3000/wecare/login-user?username='+textUserUsername+'&password='+textUserPassword)
+  //     .then((response) => response.json())
+  //     .then((json) => setData(json))
+  //     .catch((error) => console.error(error))
+  //     .finally(() => setLoading(false));
       
     
-    //console.log(user)
+  //   //console.log(user)
    
-  };
+  // };
 
-    const checkTextInput = () => {
+
+  
+  // useEffect(()=> {
+  //   //var token="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkF1cmVsYSIsImlhdCI6MTY2ODYxNDE4MX0.JldNNuROQ_fhskcNI-aIKmOoiUxOkmQOGYtz9OgLBEY"
+  //     fetch('http://127.0.0.1:3000/wecare/login-user?username='+textUserUsername+'&password='+textUserPassword)
+  //     .then((response) => response.json())
+  //     .then((json) => setData(json))
+  //     .catch((error) => console.error(error))
+  //     .finally(() => setLoading(false));
+
+  // }, []);
+
+  // React.useEffect(() => {
+  //   const focusHandler = navigation.addListener('focus', () => {
+  //     fetch('http://127.0.0.1:3000/wecare/login-user?username='+textUserUsername+'&password='+textUserPassword)
+  //     .then((response) => response.json())
+  //     .then((json) => setData(json))
+  //     .catch((error) => console.error(error))
+  //     .finally(() => setLoading(false));
+  //   });
+  //   return focusHandler;
+  // }, [navigation]);
+
+
+
+ 
+  const getToken = async () => {
+    try{
+      const response = await fetch('https://we-care-centennial.herokuapp.com/wecare/login-user?username='+textUserUsername+'&password='+textUserPassword);
+      const json = await response.json();
+      setData(json);
      
+    }catch(err){
+      console.error(err);
+    }finally{
+      setLoading(false);
+    }
+  }
+  
+   React.useEffect(()=>{getToken()}, []);
+
+    const checkTextInput =  () => {
+      //getToken()
       //Check for the Patient's TextInputs
       if (!textUserUsername.trim()) {
-        alert('Please Enter Name');
+        alert('Please enter your username');
         return;
       }
       if (!textUserPassword.trim()) {
-        alert('Please Password');
+        alert('Please enter your password');
         return;
       }
 
-      getToken()
-      if((data.token != undefined)) {
-        console.log(data.token)
+     
+    fetch('https://we-care-centennial.herokuapp.com/wecare/login?username='+textUserUsername+'&password='+textUserPassword).
+     then((response)=>{
+      console.log(response);
+      response.json().
+     then((json)=>{setData(json);
+     console.log(json)
+     console.log(json.token)
+      if((json.token != undefined)) {
+        console.log(json.token)
         navigation.navigate('Home', {
-          token: data.token,
+          token: json.token,
           password: textUserPassword
         })
       }
@@ -56,15 +106,19 @@ function HomeScreen ({})  {
        
         alert('Please check your credencial');
       }  
-      console.log(data.token)
+      console.log(json.token)
+     }
+    ).catch((err)=>{console.error(err);})
+    .finally(()=>{setLoading(false);});
     
-    }
+    })}
+
+  
 
 
     return(
     <View>
-     {/* <Text onChangeText={(value) => setToken(value)}>Hey</Text> */}
-    
+      
             <View>
                 <View style={{ alignItems: 'center', justifyContent: 'center', marginTop: 20 }}>
                 <Image style = {styles.logo} source={require('../../images/logo-wecare.png')} />

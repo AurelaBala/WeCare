@@ -19,6 +19,7 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 
 function PatientDetailsScreen()  {
   
+  
 
   const [isVisible, setModalVisible] = React.useState(false);
   const navigation = useNavigation();
@@ -27,6 +28,7 @@ function PatientDetailsScreen()  {
   var token = route.params.token
   var password = route.params.password
   var patient_id = route.params.patient_id
+  var record_link = route.params.record_link
 
   const [isLoading, setLoading] = useState(true);
   const [data, setData] = useState([]);
@@ -45,10 +47,8 @@ function PatientDetailsScreen()  {
 
   
   useEffect(() => {
-    //var token="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkF1cmVsYSIsImlhdCI6MTY2ODYxNDE4MX0.JldNNuROQ_fhskcNI-aIKmOoiUxOkmQOGYtz9OgLBEY"
-   // var password = '123'
-   // var id = "d9wkcr"
-    fetch('http://127.0.0.1:3000/wecare/get-patient?token='+token+'&password='+password+'&patient_id='+patient_id)
+    
+    fetch('https://we-care-centennial.herokuapp.com/wecare/patient/'+patient_id+'?token='+token+'&password='+password)
       .then((response) => response.json())
       .then((json) => setData(json))
       .catch((error) => console.error(error))
@@ -57,21 +57,34 @@ function PatientDetailsScreen()  {
 
   useEffect(() => {
     //var token="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkF1cmVsYSIsImlhdCI6MTY2ODYxNDE4MX0.JldNNuROQ_fhskcNI-aIKmOoiUxOkmQOGYtz9OgLBEY"
-    fetch('http://localhost:3000/wecare/get-records?token='+token+'&password='+password+'&patient_id='+patient_id)
+    fetch('https://we-care-centennial.herokuapp.com/wecare/records?token='+token+'&password='+password+'&record_link='+record_link)
       .then((response) => response.json())
       .then((json) => setRecords(json))
       .catch((error) => console.error(error))
       .finally(() => setLoading(false));
   }, []);
+
+  //refresh
+  React.useEffect(() => {
+    const focusHandler = navigation.addListener('focus', () => {
+      fetch('https://we-care-centennial.herokuapp.com/wecare/records?token='+token+'&password='+password+'&record_link='+record_link)
+      .then((response) => response.json())
+      .then((json) => setRecords(json))
+      .catch((error) => console.error(error))
+      .finally(() => setLoading(false));
+    });
+    return focusHandler;
+  }, [navigation]);
   
   const deletePatient = () => {
-    fetch('http://127.0.0.1:3000/wecare/delete-patient?token='+token+'&password='+password+'&patient_id='+patient_id, {
+    fetch('https://we-care-centennial.herokuapp.com/wecare/patient/'+patient_id+'?token='+token+'&password='+password, {
         method: 'DELETE',
         headers: {
           Accept: 'application/json',
           'Content-Type': 'application/json'
         },
       });  
+      
      deleteAllRecords()
       navigation.navigate("Home" ,{
                     
@@ -82,7 +95,7 @@ function PatientDetailsScreen()  {
   }
 
   const deleteAllRecords = () => {
-    fetch('http://localhost:3000/wecare/delete-records?token='+token+'&password='+password+'&patient_id='+patient_id, {
+    fetch('https://we-care-centennial.herokuapp.com/wecare/records?token='+token+'&password='+password+'&record_link='+record_link, {
         method: 'DELETE',
         headers: {
           Accept: 'application/json',
@@ -161,7 +174,7 @@ function PatientDetailsScreen()  {
           <Text style={styles.commonTextChild}>Age:</Text> {age}
         </Text>
         <Text style={styles.commonText}>
-          <Text style={styles.commonTextChild}>Birthday:</Text> {dateOfBirthday} 1997
+          <Text style={styles.commonTextChild}>Birthday:</Text> {dateOfBirthday}
         </Text>
         <Text style={styles.commonText}>
           <Text style={styles.commonTextChild}>Status:</Text> {patientStatus} 
@@ -217,7 +230,10 @@ function PatientDetailsScreen()  {
                 patient_id: patient_id,
                 token: token,
                 password: password,
-                patient_name: patientName
+                patient_name: patientName,
+                record_link: record_link
+
+
               })}>
               <Image
                 style={styles.sideLogo}
@@ -230,7 +246,8 @@ function PatientDetailsScreen()  {
                 patient_id: patient_id,
                 token: token,
                 password: password,
-                patient_name: patientName
+                patient_name: patientName,
+                record_link: record_link
               })}
             >
               <Image
@@ -247,7 +264,24 @@ function PatientDetailsScreen()  {
         </Pressable>
         <Pressable
           style={styles.editPressable}
-          onPress={() => navigation.navigate("Update Patient's Informtion")}
+          onPress={() => navigation.navigate("Update Patient's Information", {
+            patient_id: patient_id,
+            token: token,
+            password: password,
+            patient_name: patientName,
+            city: city,
+            postalCode: postalCode,
+            allergies: allergies,
+            emergencyContactName: emergencyContactName,
+            emergencyContactNumber: emergencyContactNumber,
+            medicalCondition: medicalCondition,
+            age:age,
+            address: address,
+            patientStatus: patientStatus,
+            dateOfBirthday: dateOfBirthday,
+            patientStatus: patientStatus,
+            record_link: record_link
+          })}
         >
           <Text style={styles.editText}>Edit</Text>
         </Pressable>

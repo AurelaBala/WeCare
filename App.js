@@ -31,7 +31,7 @@ function App() {
         <Stack.Screen name = "All Patients" component = {ViewAllPatientsScreen} />
         <Stack.Screen name = "Patient's Information" component={PatientDetailsScreen}/>
         <Stack.Screen name = "Patient's All Records" component={PatientRecordsListingScreen}/>
-        <Stack.Screen name = "Update Patient's Informtion" component={EditPatientDetailsScreen}/>
+        <Stack.Screen name = "Update Patient's Information" component={EditPatientDetailsScreen}/>
         <Stack.Screen name = "Add Patient's Record" component={CreatePatientRecordScreen}/>
         <Stack.Screen name = "Update Patient's Record" component={EditPatientRecordScreen} />
       </Stack.Navigator>

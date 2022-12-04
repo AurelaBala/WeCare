@@ -13,8 +13,10 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import SelectList from "react-native-dropdown-select-list";
 
 //var recordDataType = ""
-//var recordValue = ""
+//var recordValueNew = ""
 const EditPatientRecordScreen = () => {
+
+  var text = ""
   const navigation = useNavigation();
   const route = useRoute();
   
@@ -26,12 +28,36 @@ const EditPatientRecordScreen = () => {
   var record_value = route.params.value
   var record_type = route.params.type
   var record_date = route.params.date
+  var record_link = route.params.record_link
+  var patient_name = route.params.patient_name
+
   const [isLoading, setLoading] = useState(true);
   const [data, setData] = useState([]);
 
+  const setText = () => {
+    if(selectedValue == "Blood Pressure") {
+      text = "mmHg"
+    }
+    else if(selectedValue == "Blood Oxygen") {
+      text = "%"
+    }
+    else if(selectedValue == "Heartbeat Rate") {
+      text = "beats per minute"
+    }
+    else if(selectedValue == "Respiratory Rate") {
+      text = " breaths per minute"
+    }
+
+    else {
+        text =  ""
+    }
+    
+  }
+
+
   useEffect(() => {
    
-    fetch('http://127.0.0.1:3000/wecare/get-record?token='+token+'&password='+password+'&record_id='+record_id)
+    fetch('https://we-care-centennial.herokuapp.com/wecare/record/'+record_id+'?token='+token+'&password='+password)
       .then((response) => response.json())
       .then((json) => setData(json))
       .catch((error) => console.error(error))
@@ -39,10 +65,10 @@ const EditPatientRecordScreen = () => {
    // recordValue = data.value
 
   }, []);
-  var recordDate = data.date
-  var recordType= data.type
+  //var recordDate = data.date
+  //var recordType= data.type
  
-  console.log(data.value)
+  //console.log(data.value)
   //var test = recordValue
   const [val, onChangeValueText] = React.useState("");
   const [selectedDate, setDate] = React.useState(record_date);
@@ -65,7 +91,7 @@ const EditPatientRecordScreen = () => {
 
 
   const updateRecord = () => {
-    fetch('http://127.0.0.1:3000/wecare/edit-record?token='+token+'&password='+password+'&patient_id='+patient_id+'&record_id='+record_id+'&date='+newdate+'&type='+recordDataType+'&value='+recordValueNew, {
+    fetch('https://we-care-centennial.herokuapp.com/wecare/record/'+record_id+'?&token='+token+'&password='+password+'&record_link='+record_link+'&record_id='+record_id+'&date='+newdate+'&type='+record_date+'&value='+record_value, {
         method: 'PATCH',
         headers: {
           Accept: 'application/json',
@@ -77,6 +103,27 @@ const EditPatientRecordScreen = () => {
                     
         token: token,
         password: password,
+       
+      })
+  }
+
+
+  const deleteRecord = () => {
+    fetch('https://we-care-centennial.herokuapp.com/wecare/record/'+record_id+'?&token='+token+'&password='+password, {
+        method: 'DELETE',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json'
+        },
+      });  
+    
+      navigation.navigate("Patient's All Records" ,{
+                    
+        patient_id: patient_id,
+        token: token,
+        password: password,
+        patient_name: patient_name,
+        record_link: record_link
        
       })
   }
@@ -100,8 +147,8 @@ const EditPatientRecordScreen = () => {
     //if all text inputs are not empty, get their values
     
     //recordDataType = textDataType
-    recordValueNew = textRecordValue
-    recordDataType = selectedValue
+    record_value = textRecordValue
+    record_date = selectedValue
     //call create patient method
     updateRecord()
     //navigate to list of all patients after creating the user
@@ -109,7 +156,8 @@ const EditPatientRecordScreen = () => {
       token: token,
       password: password,
       patient_id: patient_id,
-      patient_name: patient_name
+      patient_name: patient_name,
+      record_link: record_link
       
     })
     alert('Record was edited Successfuly');
@@ -157,7 +205,7 @@ const EditPatientRecordScreen = () => {
                   color: "#000",
                   padding: 10,
                 }}
-                onPress={() => navigation.navigate("Patient's All Records")}
+                onPress = {deleteRecord}
               >
                 <Text style={styles.subTextModal}>Delete Record</Text>
               </Pressable>
@@ -170,6 +218,7 @@ const EditPatientRecordScreen = () => {
         <Text style={styles.commonTextChild}>Date: </Text>
         <View style={styles.datePickerView}>
           <DatePicker
+          format="YYYY-MM-DD"
             customStyles={{
               dateInput: {
                 marginLeft: 0,
@@ -199,16 +248,20 @@ const EditPatientRecordScreen = () => {
           />
         </View>
       </View>
-      <View style={styles.twoColumnView}>
-        <Text style={styles.commonTextChild}>Data Type: </Text>
-        <SelectList
+      <Text style={styles.commonTextChild}>Data type: <Text style = {styles.statusText}>{record_type}</Text></Text>
+      
+      <View  style={{ width: "90%", marginLeft: "5%"}}>
+      <SelectList
           setSelected={setSelectedValue}
           data={dataTypeList}
           boxstyles={{ borderRadius: 0, backgroundColor: "white" }}
           dropDownStyles={{ position: "absolute", backgroundColor: "white" }}
           onChangeText={(value) => setDataType(value)}
+          onChangeValueText = {setText()}
         />
       </View>
+       
+     
       <View style={styles.valueTwoColumnView}>
         <Text style={styles.commonTextChild}>Value: </Text>
         <View>
@@ -217,10 +270,9 @@ const EditPatientRecordScreen = () => {
               style={styles.textInput}
               value= {textRecordValue}
               placeholderTextColor="black"
-              // placeholder={recordValue}
               onChangeText={(value) => setRecordValue(value)}
             />
-            <Text style={styles.commonTextChild}>mmHg</Text>
+            <Text style= {styles.commonTextValue}> {text} </Text>
           </View>
         </View>
       </View>
@@ -237,7 +289,8 @@ const EditPatientRecordScreen = () => {
             patient_id: patient_id,
             token: token,
             password: password,
-            patient_name: patient_name
+            patient_name: patient_name,
+            record_link: record_link
           })}
         >
           <Text style={styles.discardText}>Discard</Text>
@@ -385,5 +438,13 @@ const styles = StyleSheet.create({
   deleteText: {
     color: "white",
   },
+  commonTextValue: {
+    paddingTop: '4%',
+  },
+
+  statusText: {
+    color: "#dc143c",
+    textAlign: 'right',
+  }
 });
 export default EditPatientRecordScreen;

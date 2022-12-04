@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { FlatList, Text, View, StyleSheet, ScrollView, Pressable } from 'react-native';
+import { FlatList, Text, View, StyleSheet, ScrollView, Pressable, Alert } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 
 
 
 
-function ViewAllPatientsScreen ()  {
+const ViewAllPatientsScreen = ({}) => {
 
- 
+
+
   const navigation = useNavigation();
   const [isLoading, setLoading] = useState(true);
   const [data, setData] = useState([]);
@@ -16,15 +17,30 @@ function ViewAllPatientsScreen ()  {
   var password = route.params.password
   
 //console.log(to)
+
+
+
   useEffect(() => {
     //var token="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkF1cmVsYSIsImlhdCI6MTY2ODYxNDE4MX0.JldNNuROQ_fhskcNI-aIKmOoiUxOkmQOGYtz9OgLBEY"
-    fetch('http://localhost:3000/wecare/get-all-patients?token='+token+'&password='+password)
+    fetch('https://we-care-centennial.herokuapp.com/wecare/patient?token='+token+'&password='+password)
       .then((response) => response.json())
       .then((json) => setData(json))
       .catch((error) => console.error(error))
       .finally(() => setLoading(false));
   }, []);
+  
 
+
+React.useEffect(() => {
+  const focusHandler = navigation.addListener('focus', () => {
+    fetch('https://we-care-centennial.herokuapp.com/wecare/patient?token='+token+'&password='+password)
+    .then((response) => response.json())
+    .then((json) => setData(json))
+    .catch((error) => console.error(error))
+    .finally(() => setLoading(false));
+  });
+  return focusHandler;
+}, [navigation]);
 
     return (
    <View>
@@ -41,7 +57,8 @@ function ViewAllPatientsScreen ()  {
               <Pressable style={styles.scrollPatient} title="Patient" onPress={() => navigation.navigate("Patient's Information", {
                 patient_id: item.id,
                 token: token,
-                password: password
+                password: password,
+                record_link: item.record_link
               })}>
               <Text style={styles.patientText}>{item.PatientName}</Text>
               </Pressable>
