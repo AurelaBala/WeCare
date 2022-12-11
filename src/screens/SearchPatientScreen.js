@@ -3,38 +3,32 @@ import { FlatList, Text, View, StyleSheet, ScrollView, Pressable, Alert } from '
 import { useNavigation, useRoute } from '@react-navigation/native';
 
 
-const ViewAllPatientsScreen = ({}) => {
+
+
+const SearchPatientScreen = ({}) => {
+
   const navigation = useNavigation();
   const [isLoading, setLoading] = useState(true);
   const [data, setData] = useState([]);
   const route = useRoute();
   var token = route.params.token
   var password = route.params.password
-  
+  var patient_name = route.params.patient_name
+
   if(token == "") 
 {
   navigation.navigate('Sign in')
 }
 
   useEffect(() => {
-    fetch('https://we-care-centennial.herokuapp.com/wecare/patient?token='+token+'&password='+password)
+   
+    fetch('https://we-care-centennial.herokuapp.com/wecare/byname/'+patient_name+'?token='+token+'&password='+password)
       .then((response) => response.json())
       .then((json) => setData(json))
       .catch((error) => console.error(error))
       .finally(() => setLoading(false));
   }, []);
   
-React.useEffect(() => {
-  const focusHandler = navigation.addListener('focus', () => {
-    fetch('https://we-care-centennial.herokuapp.com/wecare/patient?token='+token+'&password='+password)
-    .then((response) => response.json())
-    .then((json) => setData(json))
-    .catch((error) => console.error(error))
-    .finally(() => setLoading(false));
-  });
-  return focusHandler;
-}, [navigation]);
-
     return (
    <View>
       <View style={styles.customScrollView}>
@@ -64,7 +58,7 @@ React.useEffect(() => {
     );
 }
 
-export default ViewAllPatientsScreen;
+export default SearchPatientScreen;
 
 const styles = StyleSheet.create({
   customScrollView: {

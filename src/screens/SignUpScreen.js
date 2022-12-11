@@ -12,11 +12,6 @@ function SignInScreen({}) {
     const [textUserPassword, setUserPassword] = useState('');
     
    
-   
-
-  
-    
-
     const checkTextInput = () => {
       //Check for the Patient's TextInputs
       if (!textUserName.trim()) {
@@ -36,10 +31,8 @@ function SignInScreen({}) {
       userName = textUserName
       this.userEmail = textUserEmail
       this.userPassword = value
-
       //call create user method
       createUser()
-      //navigate to list of all patients after creating the user
       navigation.navigate('Sign in')
       alert('User was added Successfuly');
     };
@@ -54,7 +47,6 @@ function SignInScreen({}) {
           },
         });
   }
-
 
   const [value, setValue] = useState(1);
     return(
@@ -75,7 +67,6 @@ function SignInScreen({}) {
               placeholder = "Enter Your Email"
               onChangeText={(value) => setUserEmail(value)}
               />
-             
               <TextInput style = {styles.input}
               underlineColorAndroid = "transparent"
               placeholder = "Enter Your Password"
@@ -83,12 +74,9 @@ function SignInScreen({}) {
               //onChange={handleChange}
               onChangeText={(value) => setUserPassword(value)}
               />
-              
               <TouchableOpacity style = {styles.submitButton}
               onPress={checkTextInput}
               >
-            
-              
             <Text style = {styles.submitButtonText}>Create account</Text>
             </TouchableOpacity>
             </View>
@@ -103,9 +91,6 @@ function SignInScreen({}) {
 
     );
 }
-
-
-
 
 export default SignInScreen;
 

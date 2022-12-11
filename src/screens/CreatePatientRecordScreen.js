@@ -24,9 +24,11 @@ var text = ""
   const [textDataType, setDataType] = useState('');
   const [textRecordValue, setRecordValue] = useState('');
 
-  //const [textTextValue, setTextValue] = useState('');
-
-  
+  if(token == "") 
+{
+  navigation.navigate('Sign in')
+}
+ 
   var recordDate = selectedDate
   var dataTypeList = [
     { key: "Blood Pressure", value: "Blood Pressure" },
@@ -55,9 +57,6 @@ var text = ""
     
   }
 
- // React.useEffect(()=>{setTextValue()}, []);
-
-
   const createRecord = () => {
 
     fetch('https://we-care-centennial.herokuapp.com/wecare/record?token='+token+'&password='+password+'&record_link='+record_link+'&date='+recordDate+'&type='+recordDataType+'&value='+recordValue, {
@@ -67,7 +66,6 @@ var text = ""
           'Content-Type': 'application/json'
         },
       });  
-      //checkTextInput
   }
 
 
@@ -75,49 +73,26 @@ var text = ""
 
   const checkTextInput = () => {
     
-    // if(selectedValue == "Blood Pressure") {
-    //   setTextValue("mmHg")
-    // }
-
-    // else if(selectedValue == "Blood Oxygen") {
-    //   setTextValue("%")
-    // }
-   
-    // else if(selectedValue == "Heartbeat Rate") {
-    //   setTextValue("beats per minute")
-    // }
-    // else if(selectedValue == "Respiratory Rate") {
-    //   setTextValue(" breaths per minute")
-    // }
-
-    // else {
-    //     setTextValue("")
-    // }
-    
     if (!selectedDate.trim()) {
       alert('Please select a date');
       return;
     }
-
     if (!selectedValue.trim()) {
       alert('Please select a data type');
       return;
     }
-
     if (!textRecordValue.trim()) {
       alert('Please Enter a Value');
       return;
     }
     
     //if all text inputs are not empty, get their values
-    
-    //recordDataType = textDataType
     recordValue = textRecordValue
     recordDataType = selectedValue
     recordDate = selectedDate
-    //call create patient method
+    //call create record method
     createRecord()
-    //navigate to list of all patients after creating the user
+    //navigate to list of all records after creating the record
     navigation.navigate("Patient's All Records" , {
       token: token,
       password: password,
@@ -128,7 +103,6 @@ var text = ""
     alert('Record was added Successfuly');
   };
 
-  
 
   LogBox.ignoreAllLogs();
   return (
@@ -181,8 +155,6 @@ var text = ""
           onChangeValueText = {setText()}
         />
       </View>
-
-
       <View style={styles.valueTwoColumnView}>
         <Text style={styles.commonTextChild}>Value: </Text>
         <View>

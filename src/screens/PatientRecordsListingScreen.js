@@ -24,17 +24,19 @@ function PatientRecordsListingScreen () {
   var patient_name = route.params.patient_name
   var record_link = route.params.record_link
 
-  //console.log(to)
+  if(token == "") 
+{
+  navigation.navigate('Sign in')
+}
+
+ 
   useEffect(() => {
-    //var token="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkF1cmVsYSIsImlhdCI6MTY2ODYxNDE4MX0.JldNNuROQ_fhskcNI-aIKmOoiUxOkmQOGYtz9OgLBEY"
     fetch('https://we-care-centennial.herokuapp.com/wecare/records?token='+token+'&password='+password+'&record_link='+record_link)
       .then((response) => response.json())
       .then((json) => setData(json))
       .catch((error) => console.error(error))
       .finally(() => setLoading(false));
   }, []);
-
-
 
 //refresh
 React.useEffect(() => {
@@ -61,7 +63,6 @@ React.useEffect(() => {
           'Content-Type': 'application/json'
         },
       });  
-      //checkTextInput
   }
   return (
     
@@ -93,9 +94,6 @@ React.useEffect(() => {
          
         )
       }
-      
-       
-        
       </View>
       <Modal
         animationType="slide"
@@ -149,16 +147,11 @@ React.useEffect(() => {
           </View>
         </View>
       </Modal>
-
       <View style={styles.bottomDeleteButton}>
         <Pressable style={styles.deletePressable} onPress={settingVisibility}>
           <Text style={styles.deleteText}>Delete</Text>
         </Pressable>
       </View>
-      
-
-
-     
     </View>
   );
 };

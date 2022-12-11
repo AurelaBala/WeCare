@@ -15,6 +15,7 @@ import PatientRecordsListingScreen from "./src/screens/PatientRecordsListingScre
 import EditPatientDetailsScreen from "./src/screens/EditPatientDetailsScreen";
 import CreatePatientRecordScreen from "./src/screens/CreatePatientRecordScreen";
 import EditPatientRecordScreen from "./src/screens/EditPatientRecordScreen";
+import SearchPatientScreen from "./src/screens/SearchPatientScreen";
 
 
 const Stack = createNativeStackNavigator();
@@ -34,6 +35,7 @@ function App() {
         <Stack.Screen name = "Update Patient's Information" component={EditPatientDetailsScreen}/>
         <Stack.Screen name = "Add Patient's Record" component={CreatePatientRecordScreen}/>
         <Stack.Screen name = "Update Patient's Record" component={EditPatientRecordScreen} />
+        <Stack.Screen name = "Search Patient" component={SearchPatientScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

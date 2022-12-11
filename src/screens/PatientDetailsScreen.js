@@ -16,19 +16,20 @@ import {
 
 import { useNavigation, useRoute } from "@react-navigation/native";
  
-
 function PatientDetailsScreen()  {
-  
-  
 
   const [isVisible, setModalVisible] = React.useState(false);
   const navigation = useNavigation();
-
   const route = useRoute();
   var token = route.params.token
   var password = route.params.password
   var patient_id = route.params.patient_id
   var record_link = route.params.record_link
+
+  if(token == "") 
+{
+  navigation.navigate('Sign in')
+}
 
   const [isLoading, setLoading] = useState(true);
   const [data, setData] = useState([]);
@@ -56,7 +57,6 @@ function PatientDetailsScreen()  {
   }, []);
 
   useEffect(() => {
-    //var token="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkF1cmVsYSIsImlhdCI6MTY2ODYxNDE4MX0.JldNNuROQ_fhskcNI-aIKmOoiUxOkmQOGYtz9OgLBEY"
     fetch('https://we-care-centennial.herokuapp.com/wecare/records?token='+token+'&password='+password+'&record_link='+record_link)
       .then((response) => response.json())
       .then((json) => setRecords(json))
@@ -218,12 +218,8 @@ function PatientDetailsScreen()  {
          
         )
       }
-      
-              
             </ScrollView>
           </View>
-
-
           <View style={styles.directionColumn}>
             <TouchableOpacity
               onPress={() => navigation.navigate("Patient's All Records", {
@@ -232,8 +228,6 @@ function PatientDetailsScreen()  {
                 password: password,
                 patient_name: patientName,
                 record_link: record_link
-
-
               })}>
               <Image
                 style={styles.sideLogo}

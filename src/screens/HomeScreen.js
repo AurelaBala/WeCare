@@ -1,30 +1,22 @@
 import * as React from 'react';
 import { Button, View, Text, StyleSheet, Pressable, TextInput } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import  {useState} from 'react';
 
-
-
-
-
-
-
+var patientName = ""
 
 function HomeScreen ({ navigation })  {
-
-  
-  
-
-
-
-    //const navigation = useNavigation();
+  const [textPatientName, setPatientName] = useState('');
     const route = useRoute();
     var token = route.params.token
     var password = route.params.password
 
-  
+if(token == "") 
+{
+  navigation.navigate('Sign in')
+}
+
     const userLogout = () => {
-      
-     
       fetch('http://localhost:3000/wecare/logout-user?token='+token, {
           method: 'POST',
           headers: {
@@ -34,14 +26,36 @@ function HomeScreen ({ navigation })  {
         });  
        
     }
+
+    const checkTextInput = () => {
+      //Check for the Patient's TextInputs
+      if (!textPatientName.trim()) {
+        alert('Please Enter Patient Name');
+        return;
+      }
+      //if all text inputs are not empty, get their values
+      patientName = textPatientName
+      //navigate to list of all patients after creating the user
+      navigation.navigate('Search Patient' , {
+        token: token,
+        password: password,
+        patient_name: textPatientName
+      })
+      console.log (textPatientName)
+      
+    };
     return (
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', width: '80%', marginLeft: '10%' }}>
         <Text style={styles.welcomeLabel}>Welcome Label</Text>
         <View style={styles.searchBox}>
           <Text style={styles.findPatientText}>Find One Patient</Text>
         
-          <TextInput style={styles.searchInput} placeholder="Write your patients name" />
-          <Pressable style = {styles.findButton} title="See All Patients" ><Text style={styles.searchButtonText} >Find</Text></Pressable>
+          <TextInput 
+          style={styles.searchInput} 
+          placeholder="Write your patients name" 
+          onChangeText={(value) => setPatientName(value)}
+          />
+          <Pressable style = {styles.findButton} title="See All Patients" onPress={checkTextInput} ><Text style={styles.searchButtonText} >Find</Text></Pressable>
         </View>
         <Pressable style = {styles.defaultButton} title="See All Patients" onPress={() => navigation.navigate('All Patients' , {
         token: token,
@@ -51,16 +65,13 @@ function HomeScreen ({ navigation })  {
            token: token,
            password: password
         }
-        
         )} ><Text style={styles.textButton} >See All Critical Patients</Text></Pressable>
         <Pressable style = {styles.defaultButton} title="Add new patient" onPress={() => navigation.navigate('Add Patient', {
         token: token,
         password: password
       })} ><Text style={styles.textButton} >Add New Patient</Text></Pressable>
         <Pressable style = {styles.defaultButton} title="Sign out" onPress={userLogout}  onPressOut={() => navigation.navigate('Sign in', {
-          
         }
-        
         )} ><Text style={styles.textButton} >Sign Out</Text></Pressable>
       </View>
     );

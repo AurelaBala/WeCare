@@ -3,11 +3,7 @@ import { FlatList, Text, View, StyleSheet, ScrollView, Pressable, Alert } from '
 import { useNavigation, useRoute } from '@react-navigation/native';
 
 
-
-
 const ViewAllPatientsScreen = ({}) => {
-
-
 
   const navigation = useNavigation();
   const [isLoading, setLoading] = useState(true);
@@ -16,12 +12,12 @@ const ViewAllPatientsScreen = ({}) => {
   var token = route.params.token
   var password = route.params.password
   
-//console.log(to)
-
-
+  if(token == "") 
+{
+  navigation.navigate('Sign in')
+}
 
   useEffect(() => {
-    //var token="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkF1cmVsYSIsImlhdCI6MTY2ODYxNDE4MX0.JldNNuROQ_fhskcNI-aIKmOoiUxOkmQOGYtz9OgLBEY"
     fetch('https://we-care-centennial.herokuapp.com/wecare/critical?token='+token+'&password='+password)
       .then((response) => response.json())
       .then((json) => setData(json))
@@ -29,7 +25,6 @@ const ViewAllPatientsScreen = ({}) => {
       .finally(() => setLoading(false));
   }, []);
   
-
 
 React.useEffect(() => {
   const focusHandler = navigation.addListener('focus', () => {
@@ -51,7 +46,6 @@ React.useEffect(() => {
         (
         <FlatList style={styles.scrollViewStyle}
             data={data}
-            //renderItem={renderItem}
             keyExtractor={(item) => item.id.toString()}
             renderItem={({ item }) => (
               <Pressable style={styles.scrollPatient} title="Patient" onPress={() => navigation.navigate("Patient's Information", {
@@ -64,7 +58,6 @@ React.useEffect(() => {
               </Pressable>
             )}
           />
-         
         )}
       </View>
      </View> 

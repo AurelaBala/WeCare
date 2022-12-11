@@ -21,44 +21,7 @@ function HomeScreen ({})  {
   const [textUserPassword, setUserPassword] = useState('');
 
   
-  // const getToken = async() => {
-   
-  //   fetch('http://127.0.0.1:3000/wecare/login-user?username='+textUserUsername+'&password='+textUserPassword)
-  //     .then((response) => response.json())
-  //     .then((json) => setData(json))
-  //     .catch((error) => console.error(error))
-  //     .finally(() => setLoading(false));
-      
-    
-  //   //console.log(user)
-   
-  // };
-
-
-  
-  // useEffect(()=> {
-  //   //var token="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkF1cmVsYSIsImlhdCI6MTY2ODYxNDE4MX0.JldNNuROQ_fhskcNI-aIKmOoiUxOkmQOGYtz9OgLBEY"
-  //     fetch('http://127.0.0.1:3000/wecare/login-user?username='+textUserUsername+'&password='+textUserPassword)
-  //     .then((response) => response.json())
-  //     .then((json) => setData(json))
-  //     .catch((error) => console.error(error))
-  //     .finally(() => setLoading(false));
-
-  // }, []);
-
-  // React.useEffect(() => {
-  //   const focusHandler = navigation.addListener('focus', () => {
-  //     fetch('http://127.0.0.1:3000/wecare/login-user?username='+textUserUsername+'&password='+textUserPassword)
-  //     .then((response) => response.json())
-  //     .then((json) => setData(json))
-  //     .catch((error) => console.error(error))
-  //     .finally(() => setLoading(false));
-  //   });
-  //   return focusHandler;
-  // }, [navigation]);
-
-
-
+ 
  
   const getToken = async () => {
     try{

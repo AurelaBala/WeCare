@@ -12,8 +12,6 @@ import { LogBox } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import SelectList from "react-native-dropdown-select-list";
 
-//var recordDataType = ""
-//var recordValueNew = ""
 const EditPatientRecordScreen = () => {
 
   var text = ""
@@ -31,6 +29,10 @@ const EditPatientRecordScreen = () => {
   var record_link = route.params.record_link
   var patient_name = route.params.patient_name
 
+  if(token == "") 
+{
+  navigation.navigate('Sign in')
+}
   const [isLoading, setLoading] = useState(true);
   const [data, setData] = useState([]);
 
@@ -47,13 +49,11 @@ const EditPatientRecordScreen = () => {
     else if(selectedValue == "Respiratory Rate") {
       text = " breaths per minute"
     }
-
     else {
         text =  ""
     }
     
   }
-
 
   useEffect(() => {
    
@@ -62,14 +62,8 @@ const EditPatientRecordScreen = () => {
       .then((json) => setData(json))
       .catch((error) => console.error(error))
       .finally(() => setLoading(false));
-   // recordValue = data.value
-
   }, []);
-  //var recordDate = data.date
-  //var recordType= data.type
- 
-  //console.log(data.value)
-  //var test = recordValue
+  
   const [val, onChangeValueText] = React.useState("");
   const [selectedDate, setDate] = React.useState(record_date);
   const [textDataType, setDataType] = useState('');
@@ -86,9 +80,6 @@ const EditPatientRecordScreen = () => {
     { key: "Hearbeat Rate", value: "Hearbeat Rate" },
     { key: "Respiratory Rate", value: "Respiratory Rate" },
   ];
-
-  
-
 
   const updateRecord = () => {
     fetch('https://we-care-centennial.herokuapp.com/wecare/record/'+record_id+'?&token='+token+'&password='+password+'&record_link='+record_link+'&record_id='+record_id+'&date='+newdate+'&type='+record_date+'&value='+record_value, {
@@ -129,29 +120,16 @@ const EditPatientRecordScreen = () => {
   }
 
   const checkTextInput = () => {
-    //Check for the Patient's TextInputs
-    // if (!textRecordDate.trim()) {
-    //   alert('Please Select a Date');
-    //   return;
-    // }
-    // if (!textDataType.trim()) {
-    //   alert('Please Select Data Type');
-    //   return;
-    // }
     if (!textRecordValue.trim()) {
       alert('Please Enter a Value');
       return;
     }
     newdate = selectedDate
-    
-    //if all text inputs are not empty, get their values
-    
-    //recordDataType = textDataType
     record_value = textRecordValue
     record_date = selectedValue
-    //call create patient method
+    //call update record method
     updateRecord()
-    //navigate to list of all patients after creating the user
+    //navigate to list of all record patients after updating the record
     navigation.navigate("Patient's All Records" , {
       token: token,
       password: password,
@@ -260,8 +238,6 @@ const EditPatientRecordScreen = () => {
           onChangeValueText = {setText()}
         />
       </View>
-       
-     
       <View style={styles.valueTwoColumnView}>
         <Text style={styles.commonTextChild}>Value: </Text>
         <View>

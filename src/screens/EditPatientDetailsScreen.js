@@ -44,7 +44,6 @@ const EditPatientDetailsScreen = () => {
   const [phone, onChangePhone] = React.useState(emergencyContactNumber);
   const [medical, onChangeMedicalText] = React.useState(medicalCondition);
   const [postalText, onChangePostalText] = React.useState(postalCode);
-  //const [selectedDate, setDate] = React.useState(record_date);
   const [isVisible, setModalVisible] = React.useState(false);
   
   const [textDataType, setDataType] = useState('');
@@ -62,6 +61,11 @@ const EditPatientDetailsScreen = () => {
   var token = route.params.token
   var password = route.params.password
   var patient_id = route.params.patient_id
+
+  if(token == "") 
+  {
+    navigation.navigate('Sign in')
+  }
 
   const [isLoading, setLoading] = useState(true);
   const [data, setData] = useState([]);
@@ -93,15 +97,8 @@ const EditPatientDetailsScreen = () => {
   }
 
   const checkTextInput = () => {
-   
-    
-    // newdate = selectedDate
-    
-    // recordValueNew = textRecordValue
-    // recordDataType = selectedValue
-    //call create patient method
+  
     updatePatient()
-    //navigate to list of all patients after creating the user
     navigation.navigate('All Patients' , {
       token: token,
       password: password
@@ -157,7 +154,6 @@ const EditPatientDetailsScreen = () => {
       </Modal>
      
    
-
 <TextInput
           style={styles.formStyles}
           placeholder = "Full Name"
@@ -171,21 +167,12 @@ const EditPatientDetailsScreen = () => {
           onChangeText={(value) => onChangeAgeText(value)}
           value = {ageText}
         />
-        {/* <TextInput
-          style={styles.formStyles}
-          placeholder = "Date of birthday"
-          onChangeText={(value) => onChangeBirthdayText(value)}
-           value = {birthdayText}
-        /> */}
-
-
+       
 <View style={styles.formStyles}>
           <DatePicker 
           format="YYYY-MM-DD"
             customStyles={{
-             
               dateInput: {
-                
                 marginLeft: 0,
                 borderBottomColor: "#dda0dd",
                 borderTopColor: "white",
@@ -220,13 +207,7 @@ const EditPatientDetailsScreen = () => {
           />
         </View>
 
-        {/* <TextInput
-          style={styles.formStyles}
-          placeholder = "Status"
-          onChangeText={(value) => onChangeStatusText(value)}
-          value = {statusText}
-        /> */}
-
+       
 <View style={styles.formStyles}>
         <Text style={styles.commonTextChild}>Status now: <Text style={styles.statusText}>{patientStatus}</Text>  </Text>
         <SelectList
@@ -302,9 +283,6 @@ const EditPatientDetailsScreen = () => {
         >
           <Text style={styles.discardText}>Discard</Text>
         </Pressable>
-        {/* <Pressable style={styles.deletePressable} onPress={settingVisibility}>
-          <Text style={styles.deleteText}>Delete</Text>
-        </Pressable> */}
       </View>
     </View>
   );

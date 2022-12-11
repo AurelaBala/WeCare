@@ -8,8 +8,6 @@ import SelectList from "react-native-dropdown-select-list";
 //declare all variables that will be used on endpoint call
 var patientName = ""
 var age= ""
-var dateOfBirthday = ""
-var patientStatus = ""
 var address = ""
 var city = ""
 var postalCode = ""
@@ -18,13 +16,17 @@ var emergencyContactName = ""
 var emergencyContactNumber = ""
 var medicalCondition = ""
 
-
-
 function AddPatientScreen() {
   const navigation = useNavigation();
   const route = useRoute();
   var token = route.params.token
   var password = route.params.password
+
+//if the user don't have a token then navigate to the Sign In (access control)
+  if(token == "") 
+{
+  navigation.navigate('Sign in')
+}
 
   const [textPatientName, setPatientName] = useState('');
   const [textPatientAge, setPatientAge] = useState('');
@@ -39,7 +41,6 @@ function AddPatientScreen() {
   const [textPatientMedicalCondition, setPatientMedicalCondition] = useState('');
   const [textDataType, setDataType] = useState('');
   const [selectedDate, setDate] = useState('');
-
   const [selectedValue, setSelectedValue] = React.useState('');
 
   var dataTypeList = [
@@ -48,8 +49,8 @@ function AddPatientScreen() {
     
   ];
 
+  //create patient API method
   const createPatient = () => {
-
     fetch('https://we-care-centennial.herokuapp.com/wecare/patient?token='+token+'&password='+password+'&PatientName='+patientName+'&Age='+age+'&DOB='+selectedDate+'&Status='+selectedValue+'&Address='+address+'&City='+city+'&PostalCode='+postalCode+'&Allergies='+allergies+'&EmergencyContactName='+emergencyContactName+'&EmergencyContactNumber='+emergencyContactNumber+'&MedicalCondition='+medicalCondition, {
         method: 'POST',
         headers: {
@@ -57,8 +58,9 @@ function AddPatientScreen() {
           'Content-Type': 'application/json'
         },
       });  
-      //checkTextInput
   }
+
+  //check text input
   const checkTextInput = () => {
     //Check for the Patient's TextInputs
     if (!textPatientName.trim()) {
@@ -73,15 +75,10 @@ function AddPatientScreen() {
       alert('Please Enter Patient Date of Birthday');
       return;
     }
-
     if (!selectedValue.trim()) {
       alert("Please Select patient's Status");
       return;
     }
-    // if (!textPatientStatus.trim()) {
-    //   alert('Please Enter Patient Status');
-    //   return;
-    // }
     if (!textPatientAddress.trim()) {
       alert('Please Enter Patient Address');
       return;
@@ -111,7 +108,6 @@ function AddPatientScreen() {
       return;
     }
 
-    
     //if all text inputs are not empty, get their values
     patientName = textPatientName
     age = textPatientAge
@@ -134,35 +130,23 @@ function AddPatientScreen() {
     alert('Patient was added Successfuly');
   };
 
- 
-
     return (
       <View style={styles.addPatientView}>
-       
-        {/* <Image style={styles.avatarImage} source={require('../../images/avatar.png')} /> */}
         <TextInput
           style={styles.formStyles}
           placeholder = "Full Name"
           onChangeText={(value) => setPatientName(value)}
         />
-       
         <TextInput
           style={styles.formStyles}
           placeholder = "Age"
           onChangeText={(value) => setPatientAge(value)}
         />
-        {/* <TextInput
-          style={styles.formStyles}
-          placeholder = "Date of birthday"
-          onChangeText={(value) => setPatientDateOfBirthday(value)}
-        /> */}
         <View style={styles.formStyles}>
           <DatePicker 
           format="YYYY-MM-DD"
             customStyles={{
-             
               dateInput: {
-                
                 marginLeft: 0,
                 borderBottomColor: "#dda0dd",
                 borderTopColor: "white",
@@ -195,13 +179,6 @@ function AddPatientScreen() {
             cancelBtnText="Cancel"
           />
         </View>
-        
-        {/* <TextInput
-          style={styles.formStyles}
-          placeholder = "Status"
-          onChangeText={(value) => setPatientStatus(value)}
-        /> */}
-
 <View style={styles.formStyles}>
         <Text style={styles.commonTextChild}>Status: </Text>
         <SelectList
@@ -212,10 +189,8 @@ function AddPatientScreen() {
           boxstyles={{ borderRadius: 0, backgroundColor: "white" }}
           dropDownStyles={{ position: "absolute", backgroundColor: "white", width: "100%" }}
           onChangeText={(value) => setDataType(value)}
-         
         />
       </View>
-
         <TextInput
           style={styles.formStyles}
           placeholder = "Street"
@@ -262,9 +237,6 @@ function AddPatientScreen() {
     );
     
 }
-
-
-
 
 export default AddPatientScreen;
 
